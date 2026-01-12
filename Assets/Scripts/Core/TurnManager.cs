@@ -22,6 +22,7 @@ public class TurnManager:MonoBehaviour
         
         OnTurnEnd?.Invoke(TurnIndex);
         TurnIndex++;
+        
         OnTurnStart?.Invoke(TurnIndex);
         //1.5초마다 턴엔드, 턴 스타트 신호를 보냄
     }

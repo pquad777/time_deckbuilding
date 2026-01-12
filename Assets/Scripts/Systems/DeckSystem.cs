@@ -67,7 +67,7 @@ public class DeckSystem
         return RemoveFromHandToBottom(index);
     }
     //카드 사용하고 덱 맨 밑장으로 순환시키기
-    private CardInstance RemoveFromHandToBottom(int index)
+    private CardInstance RemoveFromHandToBottom(int index) 
     {
         var card = _hand[index];
         _hand.RemoveAt(index);
