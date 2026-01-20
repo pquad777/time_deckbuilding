@@ -12,15 +12,17 @@ public class TurnManager:MonoBehaviour
     public int TurnIndex { get; private set; } = 0;
     
     private float elapsedTime = 0f;
-
+    private bool isRunning = false;
     private void Update()
     {
+        if (!isRunning) return;
         elapsedTime += Time.deltaTime;
         if (elapsedTime < turnDurationSeconds) return;
         
         elapsedTime = 0f;
         
         OnTurnEnd?.Invoke(TurnIndex);
+        if (!isRunning) return;
         TurnIndex++;
         
         OnTurnStart?.Invoke(TurnIndex);
@@ -30,12 +32,13 @@ public class TurnManager:MonoBehaviour
     public void StartLoop(bool resetTurnIndex)
     {
         if (resetTurnIndex) TurnIndex = 0;
-        
+        isRunning = true;
         OnTurnStart?.Invoke(TurnIndex);
     }
 
     public void EndLoop()
     {
+        isRunning = false;
         elapsedTime = 0f;
     }
 }

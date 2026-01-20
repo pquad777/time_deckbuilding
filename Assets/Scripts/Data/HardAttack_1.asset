@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06a06c84fea8d8b4dbc9a76d3168fe90, type: 3}
   m_Name: HardAttack_1
   m_EditorClassIdentifier: Assembly-CSharp::CardDefinition
-  displayName: 
+  displayName: Hard Attack
   Type: 0
   cost: 5
   duration: 4

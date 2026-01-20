@@ -20,29 +20,29 @@ public class InputController : MonoBehaviour
         if (!Enabled) return;
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            ChosenIndex = null; 
             OnCancelPressed?.Invoke();
+            Debug.Log($"Cancel selected card");
             return;
         }
 
         if (Input.GetKeyDown(KeyCode.Q)) 
         {
-            OnCardKeyPressed?.Invoke(0);
+            OnCardKeyPressed?.Invoke(3);
             Debug.Log($"q pressed");
         }
         if (Input.GetKeyDown(KeyCode.W))
         {
-            OnCardKeyPressed?.Invoke(1);
+            OnCardKeyPressed?.Invoke(2);
             Debug.Log($"w pressed");
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            OnCardKeyPressed?.Invoke(2);
+            OnCardKeyPressed?.Invoke(1);
             Debug.Log($"e pressed");
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            OnCardKeyPressed?.Invoke(3);
+            OnCardKeyPressed?.Invoke(0);
             Debug.Log($"r pressed");
         }
     }

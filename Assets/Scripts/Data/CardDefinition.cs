@@ -7,8 +7,9 @@ public class CardDefinition : ScriptableObject
     public string displayName;
     public CardType Type;
     public int cost;
-    public int duration;
+    public int castTimeTurns;
     public int power;
+    public int buffDurationTurns;
 }
 
 public enum CardType

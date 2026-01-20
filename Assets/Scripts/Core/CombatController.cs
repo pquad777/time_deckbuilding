@@ -8,7 +8,7 @@ public class CombatController:MonoBehaviour
     [SerializeField] private InputController _inputController;
 
     private int _handSize = 4;
-    private int _defaultDiscardIndex = 3;
+    private int _defaultDiscardIndex = 0;
 
     [SerializeField]private List<CardDefinition> _debugPlayerDeck = new();
     private DeckSystem _deckSystem;
@@ -20,6 +20,7 @@ public class CombatController:MonoBehaviour
         public int playercost = 10;
         public int enemyDamage = 2;
         public int playerDefense = 0;
+        public int playerActionDelay = 0;
     }
     private CombatState _combatState = new CombatState();
     private void Awake()
@@ -37,8 +38,8 @@ public class CombatController:MonoBehaviour
         _turnManager.OnTurnStart -= TurnStart;
         _turnManager.OnTurnEnd -= TurnEnd;
         
-        _inputController.OnCardKeyPressed += HandleCardKeyPressed;
-        _inputController.OnCancelPressed += HandleCancelPressed;
+        _inputController.OnCardKeyPressed -= HandleCardKeyPressed;
+        _inputController.OnCancelPressed -= HandleCancelPressed;
     }
 
     private void Start()
@@ -65,10 +66,11 @@ public class CombatController:MonoBehaviour
 
     private void TurnStart(int turnIndex)
     {
-        _inputController.Enable(true);
+        if (_combatState.playerActionDelay == 0)
+        {
+            _inputController.Enable(true);    
+        }
         _inputController.ClearChoice();
-        _combatState.playerDefense = 0; // 추후 수정 예정(현재는 duration 적용 못함, 턴마다 디펜스 초기화)
-        
         Debug.Log($"== TURN {turnIndex} START ==");
         PrintHand("Hand");
         Debug.Log($"Current Cost : {_combatState.playercost}");
@@ -79,37 +81,23 @@ public class CombatController:MonoBehaviour
         Debug.Log($"-- TURN {turnIndex} END (Resolve) --");
         _inputController.Enable(false);
         ResolveTurn();
-        EnemyAttack();
         CheckEnd();
+        _combatState.playerHp--;
         PrintHand("AfterResolve");
         PrintState();
+        _combatState.playerActionDelay = Math.Max(0, _combatState.playerActionDelay-1);
     }
 
     private void ResolveTurn()
     {
         if (_inputController.ChosenIndex.HasValue)
         {
-            int idx = _inputController.ChosenIndex.Value;
-            var card = _deckSystem.PlayFromHand(idx);
-            var def = card.Def;
-            _combatState.playercost -= def.cost;
-            switch (def.Type)
-            {
-                case CardType.Attack:
-                    _combatState.enemyHp -= def.power;
-                    break;
-
-                case CardType.Defense:
-                    _combatState.playerDefense += def.power;
-                    break;
-
-                case CardType.Dodge:
-                    break;//제작 예정
-            }
+            Battle();
         }
         else
         {
             DiscardDefault();
+            _combatState.playercost = Math.Min(10, ++_combatState.playercost);
         }
         _deckSystem.DrawToHand();
         _inputController.ClearChoice();
@@ -119,9 +107,8 @@ public class CombatController:MonoBehaviour
 
     private void DiscardDefault()
     {
-        int idx = Math.Clamp(_defaultDiscardIndex, 0, _deckSystem.HandCount - 1);
+        int idx = 0;
         var card = _deckSystem.DiscardFromHand(idx);
-        _combatState.playercost = Math.Min(10, ++_combatState.playercost);
         Debug.Log($"DISCARD(default): {card.Def.displayName}");
     }
     
@@ -130,9 +117,9 @@ public class CombatController:MonoBehaviour
         if (_deckSystem == null) return;
 
         string s = $"{label} [";
-        for (int i = 0; i < _deckSystem.HandCount; i++)
+        for (int i = 3; i >= 0; i--)
         {
-            s += (i == 0 ? "" : ", ") + _deckSystem.Hand[i].Def.displayName;
+            s += (i == 3 ? "" : ", ") + _deckSystem.Hand[i].Def.displayName;
         }
         s += "]";
         Debug.Log(s);
@@ -145,6 +132,10 @@ public class CombatController:MonoBehaviour
         return _combatState.playercost >= def.cost;
     }
 
+    private void EnemyDefense()
+    {
+        
+    }
     private void EnemyAttack()
     {
         int dmg = _combatState.enemyDamage;
@@ -153,7 +144,7 @@ public class CombatController:MonoBehaviour
     }
     private void CheckEnd() 
     {
-        if (_combatState.enemyHp <= 0)
+        if (_combatState.enemyHp == 0)
         {
             Debug.Log("WIN");
             _turnManager.EndLoop();
@@ -185,6 +176,31 @@ public class CombatController:MonoBehaviour
 
         _inputController.SetChoice(idx); // 선택 확정
     }
+
+    private void Battle()
+    {
+        int idx = _inputController.ChosenIndex.Value;
+        var card = _deckSystem.PlayFromHand(idx);
+        var def = card.Def;
+        _combatState.playercost -= def.cost;
+        switch (def.Type)
+        {
+            case CardType.Attack:
+                _combatState.playerActionDelay += def.castTimeTurns;
+                _combatState.enemyHp = Math.Max(0, _combatState.enemyHp - def.power);
+                break;
+
+            case CardType.Defense:
+                _combatState.playerActionDelay += def.buffDurationTurns;
+                _combatState.playerDefense += def.power;
+                break;
+
+            case CardType.Dodge:
+                break;//제작 예정
+        }
+    }
+    
+        
 
 
 }
