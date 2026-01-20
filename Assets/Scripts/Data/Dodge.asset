@@ -15,5 +15,6 @@ MonoBehaviour:
   displayName: Dodge
   Type: 0
   cost: 5
-  duration: 1
+  castTimeTurns: 0
   power: 0
+  buffDurationTurns: 0

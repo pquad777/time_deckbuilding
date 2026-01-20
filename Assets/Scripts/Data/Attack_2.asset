@@ -15,5 +15,6 @@ MonoBehaviour:
   displayName: Basic Attack
   Type: 0
   cost: 0
-  duration: 1
+  castTimeTurns: 1
   power: 2
+  buffDurationTurns: 0

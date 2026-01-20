@@ -12,16 +12,33 @@ public class CombatController:MonoBehaviour
 
     [SerializeField]private List<CardDefinition> _debugPlayerDeck = new();
     private DeckSystem _deckSystem;
+    private System.Random _aiRng = new System.Random();
 
     public class CombatState // 시뮬 용으로 간단하게 구성
     {
         public int playerHp = 300;
         public int enemyHp = 30;
         public int playercost = 10;
-        public int enemyDamage = 2;
         public int playerDefense = 0;
-        public int playerActionDelay = 0;
+        
+        public bool isCasting = false;
+        public int castTurnsRemaining = 0;
+        public int castDamage = 0;
+        
+        public int enemyDefense = 0; // 영구 누적 방어(플레이어가 없애기 전까지 유지)
+
+        public bool enemyIsCasting = false;
+        public int enemyCastTurnsRemaining = 0;
+
+        
+        public EnemyCastType enemyCastType = EnemyCastType.None;
+        public int enemyCastValue = 0; 
+        
+        public bool dodgeQueued = false;      // 다음 턴에 회피를 쓸 예정
+        public bool dodgeActiveThisTurn = false; 
+
     }
+    public enum EnemyCastType { None, Attack, Defense }
     private CombatState _combatState = new CombatState();
     private void Awake()
     {
@@ -66,14 +83,24 @@ public class CombatController:MonoBehaviour
 
     private void TurnStart(int turnIndex)
     {
-        if (_combatState.playerActionDelay == 0)
-        {
-            _inputController.Enable(true);    
-        }
-        _inputController.ClearChoice();
         Debug.Log($"== TURN {turnIndex} START ==");
+        _combatState.dodgeActiveThisTurn = _combatState.dodgeQueued;
+        _combatState.dodgeQueued = false;
+        
+        ProcessCastingAttack(); // 시전 턴 감소 + 완료시 데미지 적용
+        ProcessEnemyCasting();
+        EnemyDecideAction();
+        
+        bool canAct = !_combatState.isCasting;
+        _inputController.Enable(canAct);
+        _inputController.ClearChoice();
+
+        
         PrintHand("Hand");
         Debug.Log($"Current Cost : {_combatState.playercost}");
+        if (!canAct)
+            Debug.Log($"CASTING... ({_combatState.castTurnsRemaining} turns left)");
+        
     }
 
     private void TurnEnd(int turnIndex)
@@ -81,19 +108,28 @@ public class CombatController:MonoBehaviour
         Debug.Log($"-- TURN {turnIndex} END (Resolve) --");
         _inputController.Enable(false);
         ResolveTurn();
+        
+        
         CheckEnd();
+        
         _combatState.playerHp--;
+        _combatState.dodgeActiveThisTurn = false;
         PrintHand("AfterResolve");
         PrintState();
-        _combatState.playerActionDelay = Math.Max(0, _combatState.playerActionDelay-1);
+        
     }
 
     private void ResolveTurn()
     {
-        if (_inputController.ChosenIndex.HasValue)
+        if (_combatState.isCasting)
         {
-            Battle();
+            _inputController.ClearChoice();
+            DiscardDefault();
+            _deckSystem.DrawToHand();
+            _combatState.playercost = Math.Min(10, ++_combatState.playercost);
+            return;
         }
+        if (_inputController.ChosenIndex.HasValue) Battle();
         else
         {
             DiscardDefault();
@@ -131,17 +167,6 @@ public class CombatController:MonoBehaviour
         var def = card.Def;
         return _combatState.playercost >= def.cost;
     }
-
-    private void EnemyDefense()
-    {
-        
-    }
-    private void EnemyAttack()
-    {
-        int dmg = _combatState.enemyDamage;
-        int net = Math.Max(0, dmg - _combatState.playerDefense);
-        _combatState.playerHp -= net;
-    }
     private void CheckEnd() 
     {
         if (_combatState.enemyHp == 0)
@@ -158,7 +183,7 @@ public class CombatController:MonoBehaviour
 
     private void PrintState()
     {
-        Debug.Log($"HP: {_combatState.playerHp} Enemy:{_combatState.enemyHp}");
+        Debug.Log($"HP: {_combatState.playerHp} Def:{_combatState.playerDefense} Enemy:{_combatState.enemyHp} EnemyDef:{_combatState.enemyDefense}");
     }
     private void HandleCancelPressed()
     {
@@ -167,6 +192,11 @@ public class CombatController:MonoBehaviour
     
     private void HandleCardKeyPressed(int idx)
     {
+        if (_combatState.isCasting)
+        {
+            Debug.Log("Cannot act: casting in progress");
+            return;
+        }
         // 코스트 체크
         if (!CanUseCard(idx))
         {
@@ -186,21 +216,131 @@ public class CombatController:MonoBehaviour
         switch (def.Type)
         {
             case CardType.Attack:
-                _combatState.playerActionDelay += def.castTimeTurns;
-                _combatState.enemyHp = Math.Max(0, _combatState.enemyHp - def.power);
+            {
+                int cast = Math.Max(0, def.castTimeTurns);
+
+                if (cast == 0)
+                {
+                    // 즉발 공격
+                    _combatState.enemyHp = Math.Max(0, _combatState.enemyHp - def.power);
+                }
+                else
+                {
+                    // 시전 시작: 다른 행동 불가
+                    _combatState.isCasting = true;
+                    _combatState.castTurnsRemaining = cast;
+                    _combatState.castDamage = def.power;
+                }
                 break;
+            }
 
             case CardType.Defense:
-                _combatState.playerActionDelay += def.buffDurationTurns;
                 _combatState.playerDefense += def.power;
                 break;
 
             case CardType.Dodge:
-                break;//제작 예정
+                _combatState.dodgeQueued = true;   // 다음 턴에 발동
+                Debug.Log("DODGE QUEUED (next turn)");
+                break;
         }
     }
     
-        
+    private void ProcessCastingAttack()
+    {
+        if (!_combatState.isCasting) return;
 
+        _combatState.castTurnsRemaining = Math.Max(0, _combatState.castTurnsRemaining - 1);
+
+        if (_combatState.castTurnsRemaining == 0)
+        {
+            int net = Math.Max(0, _combatState.castDamage - _combatState.enemyDefense);
+            _combatState.enemyHp = Math.Max(0, _combatState.enemyHp - net);
+            Debug.Log($"ATTACK RESOLVED! raw={_combatState.castDamage} net={net}");
+
+            _combatState.isCasting = false;
+            _combatState.castDamage = 0;
+        }
+    }
+    private void ProcessEnemyCasting()
+    {
+        if (!_combatState.enemyIsCasting) return;
+
+        _combatState.enemyCastTurnsRemaining = Math.Max(0, _combatState.enemyCastTurnsRemaining - 1);
+
+        if (_combatState.enemyCastTurnsRemaining > 0) return;
+
+        // 발동
+        if (_combatState.enemyCastType == EnemyCastType.Attack)
+        {
+            if (_combatState.dodgeActiveThisTurn)
+            {
+                _combatState.dodgeActiveThisTurn = false; 
+                Debug.Log("DODGED! enemy attack negated");
+            }
+            else
+            {
+                int raw = _combatState.enemyCastValue;
+                int net = Math.Max(0, raw - _combatState.playerDefense);
+                _combatState.playerHp = Math.Max(0, _combatState.playerHp - net);
+                Debug.Log($"ENEMY ATTACK RESOLVED! raw={raw} net={net}");
+            }
+        }
+        else if (_combatState.enemyCastType == EnemyCastType.Defense)
+        {
+            // 적 방어는 영구 누적
+            _combatState.enemyDefense += _combatState.enemyCastValue;
+            Debug.Log($"ENEMY DEFENSE RESOLVED! +{_combatState.enemyCastValue} (total={_combatState.enemyDefense})");
+        }
+
+        // 캐스팅 종료
+        _combatState.enemyIsCasting = false;
+        _combatState.enemyCastType = EnemyCastType.None;
+        _combatState.enemyCastValue = 0;
+    }
+    private void EnemyStartCast(EnemyCastType type, int castTurns, int value)
+    {
+        castTurns = Math.Max(0, castTurns);
+        
+        castTurns = Math.Max(1, castTurns);
+
+        _combatState.enemyIsCasting = true;
+        _combatState.enemyCastType = type;
+        _combatState.enemyCastTurnsRemaining = castTurns;
+        _combatState.enemyCastValue = value;
+
+        Debug.Log($"ENEMY START CAST: type={type}, turns={castTurns}, value={value}");
+    }
+    private void EnemyDecideAction()
+    {
+        if (_combatState.enemyIsCasting)
+        {
+            // 캐스팅 중이면 기다리기
+            return;
+        }
+
+        // 랜덤 선택: 0=Attack, 1=Defense, 2=Wait
+        int choice = _aiRng.Next(3);
+
+        if (choice == 2)
+        {
+            Debug.Log("ENEMY chooses WAIT");
+            return;
+        }
+
+        if (choice == 0)
+        {
+            // 공격(수치는 임의)
+            int dmg = _aiRng.Next(3, 9);         // 3~8
+            int cast = _aiRng.Next(1, 4);        // 1~3턴
+            EnemyStartCast(EnemyCastType.Attack, cast, dmg);
+        }
+        else
+        {
+            // 방어(수치는 임의)
+            int addDef = _aiRng.Next(2, 7);      // 2~6
+            int cast = _aiRng.Next(1, 3);        // 1~2턴
+            EnemyStartCast(EnemyCastType.Defense, cast, addDef);
+        }
+    }
 
 }

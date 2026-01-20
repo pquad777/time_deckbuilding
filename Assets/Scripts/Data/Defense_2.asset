@@ -15,5 +15,6 @@ MonoBehaviour:
   displayName: Defense
   Type: 0
   cost: 3
-  duration: 4
+  castTimeTurns: 0
   power: 5
+  buffDurationTurns: 3

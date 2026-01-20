@@ -15,5 +15,6 @@ MonoBehaviour:
   displayName: Hard Attack
   Type: 0
   cost: 5
-  duration: 4
+  castTimeTurns: 4
   power: 15
+  buffDurationTurns: 0
