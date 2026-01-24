@@ -279,6 +279,19 @@ public class CombatController : MonoBehaviour
             ProcessEnemyCard(_enemyController.castingCard);
         }
     }
+    
+    private static void ApplyDamage(ref int hp, ref int defense, int damage)
+    {
+        damage = Math.Max(0, damage);
+        if (damage == 0) return;
+
+        int absorbed = Math.Min(defense, damage);
+        defense -= absorbed;
+
+        int remaining = damage - absorbed;
+        if (remaining > 0)
+            hp = Math.Max(0, hp - remaining);
+    }
 
     private void EnemyStartCast()
     {
