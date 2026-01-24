@@ -13,6 +13,7 @@ public class CardDefinition : ScriptableObject
 
     public Sprite artwork;
     public Sprite frame;
+    public string cardText;
 }
 
 public enum CardType
