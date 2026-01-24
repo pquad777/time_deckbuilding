@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: Dodge
   m_EditorClassIdentifier: Assembly-CSharp::CardDefinition
   displayName: Dodge
-  Type: 0
+  Type: 2
   cost: 5
   castTimeTurns: 0
   power: 0
   buffDurationTurns: 0
+  artwork: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  frame: {fileID: -6520964854734656330, guid: b665dc430cf1d074083d2475ed02c30b, type: 3}

@@ -6,9 +6,9 @@ public class CombatController:MonoBehaviour
 {
     [SerializeField] private TurnManager _turnManager;
     [SerializeField] private InputController _inputController;
+    [SerializeField] private HandUI handUI;
 
     private int _handSize = 4;
-    private int _defaultDiscardIndex = 0;
 
     [SerializeField]private List<CardDefinition> _debugPlayerDeck = new();
     private DeckSystem _deckSystem;
@@ -70,12 +70,10 @@ public class CombatController:MonoBehaviour
         var rng = new System.Random(); //시드 고정 가능(ex) new System.Random(1234)
         _deckSystem.Init(playerdeck, rng);
         _deckSystem.InitHand(_handSize);
+        handUI.Init(_deckSystem);
         _combatState = new CombatState();
         
         if (playerdeck == null || playerdeck.Count == 0) Debug.LogError("Deck is empty!");
-
-        
-        PrintHand("Combat Start Hand");
         
         
         _turnManager.StartLoop(true);
@@ -84,6 +82,7 @@ public class CombatController:MonoBehaviour
     private void TurnStart(int turnIndex)
     {
         Debug.Log($"== TURN {turnIndex} START ==");
+        PrintHand("Hand");
         _combatState.dodgeActiveThisTurn = _combatState.dodgeQueued;
         _combatState.dodgeQueued = false;
         
@@ -94,9 +93,7 @@ public class CombatController:MonoBehaviour
         bool canAct = !_combatState.isCasting;
         _inputController.Enable(canAct);
         _inputController.ClearChoice();
-
         
-        PrintHand("Hand");
         Debug.Log($"Current Cost : {_combatState.playercost}");
         if (!canAct)
             Debug.Log($"CASTING... ({_combatState.castTurnsRemaining} turns left)");
@@ -114,7 +111,6 @@ public class CombatController:MonoBehaviour
         
         _combatState.playerHp--;
         _combatState.dodgeActiveThisTurn = false;
-        PrintHand("AfterResolve");
         PrintState();
         
     }
@@ -143,9 +139,9 @@ public class CombatController:MonoBehaviour
 
     private void DiscardDefault()
     {
-        int idx = 0;
+        int idx = 3;
         var card = _deckSystem.DiscardFromHand(idx);
-        Debug.Log($"DISCARD(default): {card.Def.displayName}");
+        Debug.Log($"DISCARD(default): {card.def.displayName}");
     }
     
     private void PrintHand(string label)
@@ -153,9 +149,10 @@ public class CombatController:MonoBehaviour
         if (_deckSystem == null) return;
 
         string s = $"{label} [";
-        for (int i = 3; i >= 0; i--)
+        for (int i = 0; i < 4; i++)
         {
-            s += (i == 3 ? "" : ", ") + _deckSystem.Hand[i].Def.displayName;
+            var c = _deckSystem.GetCard(i);
+            s += (i == 0 ? "" : ", ") + (c != null ? c.def.displayName : "_");
         }
         s += "]";
         Debug.Log(s);
@@ -164,7 +161,7 @@ public class CombatController:MonoBehaviour
     public bool CanUseCard(int idx)
     {
         var card = _deckSystem.Hand[idx];
-        var def = card.Def;
+        var def = card.def;
         return _combatState.playercost >= def.cost;
     }
     private void CheckEnd() 
@@ -192,17 +189,8 @@ public class CombatController:MonoBehaviour
     
     private void HandleCardKeyPressed(int idx)
     {
-        if (_combatState.isCasting)
-        {
-            Debug.Log("Cannot act: casting in progress");
-            return;
-        }
-        // 코스트 체크
-        if (!CanUseCard(idx))
-        {
-            Debug.Log("Not enough cost");
-            return;
-        }
+        if (_combatState.isCasting) return;
+        if (!CanUseCard(idx)) return;
 
         _inputController.SetChoice(idx); // 선택 확정
     }
@@ -211,7 +199,7 @@ public class CombatController:MonoBehaviour
     {
         int idx = _inputController.ChosenIndex.Value;
         var card = _deckSystem.PlayFromHand(idx);
-        var def = card.Def;
+        var def = card.def;
         _combatState.playercost -= def.cost;
         switch (def.Type)
         {
