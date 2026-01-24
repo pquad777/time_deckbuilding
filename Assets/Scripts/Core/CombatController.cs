@@ -33,12 +33,12 @@ public class CombatController : MonoBehaviour
 
         _deckSystem = new DeckSystem(_handSize); //이 부분 확인 필요
         var rng = new System.Random(); //시드 고정 가능(ex) new System.Random(1234)
-        _deckSystem.Init((_playerController.playerDeckRaw.Count < 6 ? _debugPlayerDeck : _playerController.playerDeckRaw), rng);
+        _deckSystem.Init((_playerController.playerDeck.Count < 6 ? _debugPlayerDeck : _playerController.playerDeck), rng);
         _deckSystem.InitHand(_handSize);
         handUI.Init(_deckSystem);
         
-        if (playerdeck == null || playerdeck.Count == 0) Debug.LogError("Deck is empty!");
-        
+        // if (_playerController.playerDeck == null || _playerController.playerDeck.Count == 0) Debug.LogError("Deck is empty!");
+        if (_debugPlayerDeck.Count == 0) Debug.LogError("Deck is empty!");
         
         _turnManager.OnTurnStart += TurnStart;
         _turnManager.OnTurnEnd += TurnEnd;
@@ -89,7 +89,7 @@ public class CombatController : MonoBehaviour
     private void ResolveTurn()
     {
         
-            Battle();
+        Battle();
         
 
         _inputController.ClearChoice();
@@ -110,21 +110,25 @@ public class CombatController : MonoBehaviour
     {
         if (_deckSystem == null) return;
 
-        string s = $"{label} [";
-        for (int i = _deckSystem.HandCount-1; i >= 0; i--)
-        {
-            var c = _deckSystem.GetCard(i);
-            s += (i == 0 ? "" : ", ") + (c != null ? c.def.displayName : "_");
-        }
+        int slotCount = _deckSystem.SlotCount;
 
+        string s = $"{label} [";
+        for (int i = 0; i < slotCount; i++)
+        {
+            var card = _deckSystem.GetCard(i);
+            s += (i == 0 ? "" : ", ")
+                 + (card != null ? card.def.displayName : "_");
+        }
         s += "]";
+
         Debug.Log(s);
     }
+
 
     public bool CanUseCard(int idx)
     {
         var card = _deckSystem.Hand[idx];
-        var def = card.Def;
+        var def = card.def;
         return _playerController.cost >= def.cost;
     }
 
@@ -177,7 +181,7 @@ public class CombatController : MonoBehaviour
         {
             int idx = _inputController.ChosenIndex.Value;
             var card = _deckSystem.PlayFromHand(idx);
-            var def = card.Def;
+            var def = card.def;
             _playerController.cost -= def.cost;
             StartCasting(def);
         }
