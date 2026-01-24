@@ -222,7 +222,9 @@ public class CombatController:MonoBehaviour
                 if (cast == 0)
                 {
                     // 즉발 공격
-                    _combatState.enemyHp = Math.Max(0, _combatState.enemyHp - def.power);
+                    int raw = def.power;
+                    ApplyDamage(ref _combatState.enemyHp, ref _combatState.enemyDefense, raw);
+                    Debug.Log($"PLAYER HIT! dmg={raw} enemyDef={_combatState.enemyDefense} enemyHp={_combatState.enemyHp}");
                 }
                 else
                 {
@@ -253,9 +255,13 @@ public class CombatController:MonoBehaviour
 
         if (_combatState.castTurnsRemaining == 0)
         {
-            int net = Math.Max(0, _combatState.castDamage - _combatState.enemyDefense);
-            _combatState.enemyHp = Math.Max(0, _combatState.enemyHp - net);
-            Debug.Log($"ATTACK RESOLVED! raw={_combatState.castDamage} net={net}");
+            int raw = _combatState.castDamage;
+            int beforeDef = _combatState.enemyDefense;
+            int beforeHp  = _combatState.enemyHp;
+
+            ApplyDamage(ref _combatState.enemyHp, ref _combatState.enemyDefense, raw);
+
+            Debug.Log($"ATTACK RESOLVED! dmg={raw} enemyDef {beforeDef}->{_combatState.enemyDefense} hp {beforeHp}->{_combatState.enemyHp}");
 
             _combatState.isCasting = false;
             _combatState.castDamage = 0;
@@ -280,9 +286,12 @@ public class CombatController:MonoBehaviour
             else
             {
                 int raw = _combatState.enemyCastValue;
-                int net = Math.Max(0, raw - _combatState.playerDefense);
-                _combatState.playerHp = Math.Max(0, _combatState.playerHp - net);
-                Debug.Log($"ENEMY ATTACK RESOLVED! raw={raw} net={net}");
+                int beforeDef = _combatState.playerDefense;
+                int beforeHp  = _combatState.playerHp;
+
+                ApplyDamage(ref _combatState.playerHp, ref _combatState.playerDefense, raw);
+
+                Debug.Log($"ENEMY ATTACK! dmg={raw} playerDef {beforeDef}->{_combatState.playerDefense} hp {beforeHp}->{_combatState.playerHp}");
             }
         }
         else if (_combatState.enemyCastType == EnemyCastType.Defense)
@@ -341,6 +350,19 @@ public class CombatController:MonoBehaviour
             int cast = _aiRng.Next(1, 3);        // 1~2턴
             EnemyStartCast(EnemyCastType.Defense, cast, addDef);
         }
+    }
+    
+    private static void ApplyDamage(ref int hp, ref int defense, int damage)
+    {
+        damage = Math.Max(0, damage);
+        if (damage == 0) return;
+
+        int absorbed = Math.Min(defense, damage);
+        defense -= absorbed;
+
+        int remaining = damage - absorbed;
+        if (remaining > 0)
+            hp = Math.Max(0, hp - remaining);
     }
 
 }
