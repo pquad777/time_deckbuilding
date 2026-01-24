@@ -10,7 +10,9 @@ public class CardDefinition : ScriptableObject
     public int castTimeTurns;
     public int power;
     public int buffDurationTurns;
-    public Sprite cardSprite;
+
+    public Sprite artwork;
+    public Sprite frame;
     public string cardText;
 }
 
