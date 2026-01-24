@@ -36,7 +36,7 @@ public class DeckSystem
     public void InitHand(int handSize)
     {
         _hand.Clear();
-        for (int i = 0; i < handSize; i++) DrawToHand();
+        for (int i = 0; i < handSize-1; i++) DrawToHand();
     }
     
     //한장씩 드로우
