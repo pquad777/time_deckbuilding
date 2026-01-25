@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerController: MonoBehaviour
 {
     public string name;
-    public Sprite sprite;
-    public Animator animator;
+    [SerializeField]public Sprite sprite;
+
+    public Sprite Sprite => sprite;
+    // public Animator animator;
     public int health;
     public int maxHealth;
     public int defense;
@@ -16,17 +19,19 @@ public class PlayerController: MonoBehaviour
     public bool isCasting;
     public int remainCastTime;
     public CardDefinition castingCard;
-
+    public System.Action healthChange;
     public bool isDodging;
 
     public void ApplyDamage(int damage)
     {
         health -= damage;
+        healthChange.Invoke();
     }
 
     public void ApplyDefense(int defense)
     {
         this.defense += defense;
+        healthChange.Invoke();
     }
 
     public void ApplyDodge()

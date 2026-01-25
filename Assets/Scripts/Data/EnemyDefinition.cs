@@ -6,7 +6,7 @@ public class EnemyDefinition : ScriptableObject
 {
     public string displayName;
     public Sprite sprite;
-    public Animator animator;
+    // public Animator animator;
     public int health;
     public int maxHealth;
     public int defense;

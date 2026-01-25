@@ -15,5 +15,24 @@ public class GameManager : MonoBehaviour
 
     public PlayerController playerController;
     public CombatController combatController;
-    [SerializeField]private List<CardDefinition> _debugPlayerDeck = new();
+    [SerializeField] public List<EnemyDefinition> _enemyList = new();
+    private System.Random _rng = new System.Random();
+    public EnemyDefinition RandomEnemyEncounter()
+    {
+        if (_enemyList == null || _enemyList.Count == 0)
+        {
+            Debug.LogError("GameManager: _enemyList가 비어있습니다. EnemyDefinition을 추가하세요.");
+            return null;
+        }
+        int idx = _rng.Next(0, _enemyList.Count);
+        EnemyDefinition picked = _enemyList[idx];
+        if (picked == null)
+        {
+            Debug.LogError($"_enemyList[{idx}] null");
+            return null;
+        }
+        Debug.Log($"[Encounter] Random enemy: {picked.displayName} (index={idx})");
+        return picked;
+        
+    }
 }

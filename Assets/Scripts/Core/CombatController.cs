@@ -8,28 +8,27 @@ public class CombatController : MonoBehaviour
     [SerializeField] private TurnManager _turnManager;
     [SerializeField] private InputController _inputController;
     [SerializeField] private HandUI handUI;
-
+    [SerializeField] private EnemySlotView enemyView;
+    [SerializeField] private GameManager gameManager;
     private int _handSize = 4;
    
     private PlayerController _playerController;
-
-    [SerializeField] private List<CardDefinition> _debugPlayerDeck = new();
-    public EnemyDefinition _DebugEnemy;
     private EnemyController _enemyController = new();
     private DeckSystem _deckSystem;
     private System.Random _aiRng = new System.Random();
-
-
+    
+    
 
     private void Start()
     {
-        StartCombat(_DebugEnemy);
+        StartCombat(gameManager.RandomEnemyEncounter());
     }
 
     public void StartCombat(EnemyDefinition enemyDefinition)
     {
-        _playerController = GameManager.instance.playerController;
+        
         _enemyController.LoadInfo(enemyDefinition);
+<<<<<<< Updated upstream
 
         _deckSystem = new DeckSystem(_handSize); //이 부분 확인 필요
         var rng = new System.Random(); //시드 고정 가능(ex) new System.Random(1234)
@@ -40,6 +39,16 @@ public class CombatController : MonoBehaviour
         if (playerdeck == null || playerdeck.Count == 0) Debug.LogError("Deck is empty!");
         
         
+=======
+        enemyView.Bind(_enemyController);
+        _playerController = GameManager.instance.playerController;
+        _deckSystem = new DeckSystem(_handSize); 
+        var rng = new System.Random();
+        _deckSystem.Init(_playerController.playerDeck, rng);
+        _deckSystem.InitHand(_handSize);
+        handUI.Init(_deckSystem);
+        
+>>>>>>> Stashed changes
         _turnManager.OnTurnStart += TurnStart;
         _turnManager.OnTurnEnd += TurnEnd;
 
@@ -81,6 +90,7 @@ public class CombatController : MonoBehaviour
         CheckEnd();
 
         _playerController.health--;
+        _playerController.healthChange.Invoke();
         PrintHand("AfterResolve");
         PrintState();
 
