@@ -406,6 +406,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &456262516 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2368335057188054901, guid: c1f68acbdc56c824ca86dab6edd14638, type: 3}
+  m_PrefabInstance: {fileID: 1225228099}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -686,6 +697,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &656102680 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2368335057188054901, guid: c1f68acbdc56c824ca86dab6edd14638, type: 3}
+  m_PrefabInstance: {fileID: 1985143107}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1001 &1042293065
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -957,6 +979,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1555777676}
     m_Modifications:
+    - target: {fileID: 273740179702732915, guid: c1f68acbdc56c824ca86dab6edd14638, type: 3}
+      propertyPath: frameImage
+      value: 
+      objectReference: {fileID: 456262516}
     - target: {fileID: 288943030542946930, guid: c1f68acbdc56c824ca86dab6edd14638, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1345,7 +1371,6 @@ MonoBehaviour:
   - {fileID: 1985143109}
   - {fileID: 1042293067}
   - {fileID: 354857724}
-  highlightSlots: []
 --- !u!1001 &1985143107
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1354,6 +1379,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1555777676}
     m_Modifications:
+    - target: {fileID: 273740179702732915, guid: c1f68acbdc56c824ca86dab6edd14638, type: 3}
+      propertyPath: frameImage
+      value: 
+      objectReference: {fileID: 656102680}
     - target: {fileID: 288943030542946930, guid: c1f68acbdc56c824ca86dab6edd14638, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
