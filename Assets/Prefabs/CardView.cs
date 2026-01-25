@@ -6,6 +6,7 @@ public class CardView : MonoBehaviour
 {
     [SerializeField] private Image art;
     [SerializeField] private Image frameImage;
+    [SerializeField] private Image highlightImage;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text costText;
     [SerializeField] private TMP_Text powerText;
@@ -26,11 +27,11 @@ public class CardView : MonoBehaviour
         art.sprite = def.artwork;
         nameText.text = def.displayName;
         costText.text = def.cost.ToString();
-        powerText.text = "POWER : " + def.power;
+        powerText.text = def.cardText;
         gameObject.SetActive(true);
 
     }
-
+    
     public void Clear()
     {
         frameImage.sprite = null;
@@ -41,5 +42,14 @@ public class CardView : MonoBehaviour
         costText.text = "";
         powerText.text = "";
         gameObject.SetActive(false);
+    }
+
+    public void Highlight()
+    {
+        highlightImage.enabled = true;
+    }
+    public void UnHighlight()
+    {
+        highlightImage.enabled = false;
     }
 }
