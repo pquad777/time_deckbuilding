@@ -20,6 +20,7 @@ public class PlayerController: MonoBehaviour
     public int remainCastTime;
     public CardDefinition castingCard;
     public System.Action healthChange;
+    public System.Action CostChange;
     public bool isDodging;
 
     public void ApplyDamage(int damage)

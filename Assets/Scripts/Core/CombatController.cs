@@ -10,12 +10,23 @@ public class CombatController : MonoBehaviour
     [SerializeField] private HandUI handUI;
     [SerializeField] private EnemySlotView enemyView;
     [SerializeField] private GameManager gameManager;
+    [SerializeField] private GameEndPanel gameEndPanel;
     private int _handSize = 4;
    
     private PlayerController _playerController;
     private EnemyController _enemyController = new();
     private DeckSystem _deckSystem;
     private System.Random _aiRng = new System.Random();
+    
+    public enum CombatResult
+    {
+        Win,
+        Lose
+    }
+
+    public event Action<CombatResult> OnCombatEnded;
+
+    private bool _combatEnded = false;
     
     
 
@@ -125,26 +136,34 @@ public class CombatController : MonoBehaviour
 
     private void CheckEnd()
     {
+        if (_combatEnded) return;
+
         if (_enemyController.health <= 0)
         {
-            Debug.Log("WIN");
-            _turnManager.OnTurnStart -= TurnStart;
-            _turnManager.OnTurnEnd -= TurnEnd;
-
-            _inputController.OnCardKeyPressed -= HandleCardKeyPressed;
-            _inputController.OnCancelPressed -= HandleCancelPressed;
-            _turnManager.EndLoop();
+            EndCombat(CombatResult.Win);
         }
-        else if (_enemyController.health <= 0)
+        else if (_playerController.health <= 0)
         {
-            Debug.Log("LOSE");
-            _turnManager.OnTurnStart -= TurnStart;
-            _turnManager.OnTurnEnd -= TurnEnd;
-
-            _inputController.OnCardKeyPressed -= HandleCardKeyPressed;
-            _inputController.OnCancelPressed -= HandleCancelPressed;
-            _turnManager.EndLoop();
+            EndCombat(CombatResult.Lose);
         }
+    }
+
+    private void EndCombat(CombatResult result)
+    {
+        _combatEnded = true;
+
+        Debug.Log(result == CombatResult.Win ? "WIN" : "LOSE");
+
+        
+        _turnManager.OnTurnStart -= TurnStart;
+        _turnManager.OnTurnEnd -= TurnEnd;
+
+        _inputController.OnCardKeyPressed -= HandleCardKeyPressed;
+        _inputController.OnCancelPressed -= HandleCancelPressed;
+
+        _turnManager.EndLoop();
+        
+        OnCombatEnded?.Invoke(result);
     }
 
     private void PrintState()
@@ -175,6 +194,7 @@ public class CombatController : MonoBehaviour
             var card = _deckSystem.PlayFromHand(idx);
             var def = card.def;
             _playerController.cost -= def.cost;
+            _playerController.CostChange.Invoke();
             StartCasting(def);
         }
         else if (_playerController.isCasting)
