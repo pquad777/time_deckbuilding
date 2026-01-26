@@ -14,7 +14,7 @@ public class PlayerController: MonoBehaviour
     public int defense;
     public int cost;
     public int maxCost;
-    public List<CardDefinition> playerDeckRaw;
+    public List<CardDefinition> playerDeck;
 
     public bool isCasting;
     public int remainCastTime;
@@ -48,5 +48,6 @@ public class PlayerController: MonoBehaviour
     {
         isCasting=true;
         castingCard = def;
+        remainCastTime = def.castTimeTurns;
     }
 }

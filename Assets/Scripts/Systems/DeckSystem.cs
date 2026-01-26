@@ -9,7 +9,17 @@ public class DeckSystem
     private CardInstance[] _hand;
     
     public IReadOnlyList<CardInstance> Hand => _hand;
-    public int HandCount => _hand.Length;
+    public int HandCount {
+        get
+        {
+            int c = 0;
+            for (int i = 0; i < _hand.Length; i++)
+                if (_hand[i] != null) c++;
+            return c;
+        }
+    }
+
+    public int SlotCount => _hand.Length;
     public event Action OnHandChanged;
 
     public DeckSystem(int initalHandCapacity = 4)
