@@ -13,12 +13,13 @@ public class EnemyController
     public List<CardDefinition> enemyActionList;
     public CardDefinition castingCard;
     public int remainCastTime;
-    
+    public System.Action OnChanged;
+
     public void LoadInfo(EnemyDefinition enemyDefinition)
     {
         displayName = enemyDefinition.displayName;
         sprite=enemyDefinition.sprite;
-        animator=enemyDefinition.animator;
+        // animator=enemyDefinition.animator; 현재 animator없음
         health = enemyDefinition.health;
         maxHealth=enemyDefinition.maxHealth;
         defense=enemyDefinition.defense;
@@ -28,16 +29,21 @@ public class EnemyController
 
     public void ApplyDamage(int damage)
     {
-        health -= damage;
+        this.defense -= damage;
+        if(this.defense<0)
+            health +=this.defense;
+        this.defense = 0;
     }
 
     public void ApplyDefense(int defense)
     {
         this.defense += defense;
+        OnChanged?.Invoke();
     }
     public void StartCasting(CardDefinition def)
     {
         this.castingCard = def;
         this.remainCastTime = def.castTimeTurns;
+        OnChanged?.Invoke();
     }
 }
