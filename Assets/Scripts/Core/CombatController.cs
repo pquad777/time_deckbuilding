@@ -32,7 +32,7 @@ public class CombatController : MonoBehaviour
         _playerController = GameManager.instance.playerController;
         _deckSystem = new DeckSystem(_handSize); 
         var rng = new System.Random();
-        _deckSystem.Init(_playerController.playerDeckRaw, rng);
+        _deckSystem.Init(_playerController.playerDeck, rng);
         _deckSystem.InitHand(_handSize);
         handUI.Init(_deckSystem);
         
@@ -58,7 +58,7 @@ public class CombatController : MonoBehaviour
 
         bool canAct = !_playerController.isCasting;
         _inputController.Enable(canAct);
-        _inputController.ClearChoice();
+        HandleCancelPressed();
 
         PrintHand("Hand");
         Debug.Log($"Current Cost : {_playerController.cost}");
@@ -87,9 +87,7 @@ public class CombatController : MonoBehaviour
     {
         
             Battle();
-        
-
-        _inputController.ClearChoice();
+            HandleCancelPressed();
         _playerController.cost = Math.Min(_playerController.maxCost, ++_playerController.cost);
 
 
@@ -158,13 +156,14 @@ public class CombatController : MonoBehaviour
     private void HandleCancelPressed()
     {
         _inputController.ClearChoice();
+        handUI.UnhighlightSlots();
     }
 
     private void HandleCardKeyPressed(int idx)
     {
         if (_playerController.isCasting) return;
         if (!CanUseCard(idx)) return;
-
+        handUI.HighlightSlot(idx);
         _inputController.SetChoice(idx); // 선택 확정
     }
 

@@ -29,8 +29,10 @@ public class EnemyController
 
     public void ApplyDamage(int damage)
     {
-        health -= damage;
-        OnChanged?.Invoke();
+        this.defense -= damage;
+        if(this.defense<0)
+            health +=this.defense;
+        this.defense = 0;
     }
 
     public void ApplyDefense(int defense)

@@ -20,3 +20,4 @@ MonoBehaviour:
   buffDurationTurns: 0
   artwork: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   frame: {fileID: 3213230277759091653, guid: 0c382fe504364f848824aca2a3ca4f5c, type: 3}
+  cardText: \nDamage:15\nCast:4

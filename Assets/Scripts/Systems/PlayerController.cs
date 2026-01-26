@@ -24,7 +24,12 @@ public class PlayerController: MonoBehaviour
 
     public void ApplyDamage(int damage)
     {
-        health -= damage;
+        if (isDodging)
+            return;
+        this.defense -= damage;
+        if(this.defense<0)
+        health +=this.defense;
+        this.defense = 0;
         healthChange.Invoke();
     }
 
