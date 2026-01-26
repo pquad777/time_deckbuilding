@@ -28,27 +28,14 @@ public class CombatController : MonoBehaviour
     {
         
         _enemyController.LoadInfo(enemyDefinition);
-<<<<<<< Updated upstream
-
-        _deckSystem = new DeckSystem(_handSize); //이 부분 확인 필요
-        var rng = new System.Random(); //시드 고정 가능(ex) new System.Random(1234)
-        _deckSystem.Init((_playerController.playerDeckRaw.Count < 6 ? _debugPlayerDeck : _playerController.playerDeckRaw), rng);
-        _deckSystem.InitHand(_handSize);
-        handUI.Init(_deckSystem);
-        
-        if (playerdeck == null || playerdeck.Count == 0) Debug.LogError("Deck is empty!");
-        
-        
-=======
         enemyView.Bind(_enemyController);
         _playerController = GameManager.instance.playerController;
         _deckSystem = new DeckSystem(_handSize); 
         var rng = new System.Random();
-        _deckSystem.Init(_playerController.playerDeck, rng);
+        _deckSystem.Init(_playerController.playerDeckRaw, rng);
         _deckSystem.InitHand(_handSize);
         handUI.Init(_deckSystem);
         
->>>>>>> Stashed changes
         _turnManager.OnTurnStart += TurnStart;
         _turnManager.OnTurnEnd += TurnEnd;
 
@@ -134,7 +121,7 @@ public class CombatController : MonoBehaviour
     public bool CanUseCard(int idx)
     {
         var card = _deckSystem.Hand[idx];
-        var def = card.Def;
+        var def = card.def;
         return _playerController.cost >= def.cost;
     }
 
@@ -187,7 +174,7 @@ public class CombatController : MonoBehaviour
         {
             int idx = _inputController.ChosenIndex.Value;
             var card = _deckSystem.PlayFromHand(idx);
-            var def = card.Def;
+            var def = card.def;
             _playerController.cost -= def.cost;
             StartCasting(def);
         }

@@ -27,7 +27,6 @@ public class CardView : MonoBehaviour
         nameText.text = def.displayName;
         costText.text = def.cost.ToString();
         powerText.text = "POWER : " + def.power;
-        gameObject.SetActive(true);
 
     }
 
@@ -40,6 +39,5 @@ public class CardView : MonoBehaviour
         nameText.text = "";
         costText.text = "";
         powerText.text = "";
-        gameObject.SetActive(false);
     }
 }
