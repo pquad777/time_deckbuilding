@@ -37,7 +37,7 @@ public class CombatController : MonoBehaviour
 
     public void StartCombat(EnemyDefinition enemyDefinition)
     {
-        
+        _combatEnded = false;
         _enemyController.LoadInfo(enemyDefinition);
         enemyView.Bind(_enemyController);
         _playerController = GameManager.instance.playerController;
@@ -88,7 +88,7 @@ public class CombatController : MonoBehaviour
         CheckEnd();
 
         _playerController.health--;
-        _playerController.healthChange.Invoke();
+        _playerController.healthChange?.Invoke();
         PrintHand("AfterResolve");
         PrintState();
 
