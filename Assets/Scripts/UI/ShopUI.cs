@@ -21,7 +21,7 @@ public class ShopUI : MonoBehaviour
     [SerializeField] private TMP_Text healText; 
 
     private Action _onLeave;
-
+    
     public void Open(Action onLeave)
     {
         _onLeave = onLeave;

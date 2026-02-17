@@ -7,10 +7,10 @@ public class ShopController : MonoBehaviour
     [SerializeField] private PlayerController player;
     [SerializeField] private List<CardDefinition> cardPool;
     [SerializeField] private int offerCount = 5;
-
+    
     [SerializeField] private int healCost = 100;
     [SerializeField] private int healAmount = 20;
-
+    public IReadOnlyList<CardDefinition> CardPool => cardPool;
     [System.Serializable]
     public class Offer
     {
@@ -79,4 +79,6 @@ public class ShopController : MonoBehaviour
     {
         return 50; // TODO: rarity 기반으로 확장
     }
+
+    
 }
