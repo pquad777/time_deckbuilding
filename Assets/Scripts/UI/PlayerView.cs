@@ -15,8 +15,7 @@ public class PlayerView : MonoBehaviour
     void Start()
     {
         turnManager.OnTurnStart += RefreshTurn;
-        player.healthChange += Refresh;
-        player.CostChange += Refresh;
+        player.OnPlayerDataChanged += Refresh;
         if (player != null && player.Sprite != null)
             portrait.sprite = player.Sprite;
         portrait.sprite = player.sprite;

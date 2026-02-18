@@ -21,27 +21,38 @@ public class PlayerController: MonoBehaviour
     public bool isCasting;
     public int remainCastTime;
     public CardDefinition castingCard;
-    public System.Action healthChange;
-    public System.Action CostChange;
     public bool isDodging;
+    public int defenseExpireTurn = -1;
     public event Action OnPlayerDataChanged;
 
     public void ApplyDamage(int damage)
     {
+        if (damage == 1)
+        {
+            health -= 1;
+            OnPlayerDataChanged?.Invoke();
+            return;
+        }
         if (isDodging)
             return;
-        this.defense -= damage;
-        if(this.defense<0)
-        health +=this.defense;
-        this.defense = 0;
-        healthChange.Invoke();
+        defense -= damage;
+        if (defense < 0)
+        {
+            health +=defense;
+            defense = 0;
+        }
+        
         OnPlayerDataChanged?.Invoke();
     }
 
+    public void SpendCost(int _cost)
+    {
+        this.cost -= _cost;
+        OnPlayerDataChanged?.Invoke();
+    }
     public void ApplyDefense(int defense)
     {
         this.defense += defense;
-        healthChange.Invoke();
         OnPlayerDataChanged?.Invoke();
     }
 

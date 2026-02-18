@@ -70,12 +70,7 @@ public class CombatController : MonoBehaviour
         bool canAct = !_playerController.isCasting;
         _inputController.Enable(canAct);
         HandleCancelPressed();
-
-        PrintHand("Hand");
-        Debug.Log($"Current Cost : {_playerController.cost}");
-        if (!canAct)
-            Debug.Log($"CASTING... ({_playerController.remainCastTime} turns left)");
-
+        
     }
 
     private void TurnEnd(int turnIndex)
@@ -87,8 +82,7 @@ public class CombatController : MonoBehaviour
 
         CheckEnd();
 
-        _playerController.health--;
-        _playerController.healthChange?.Invoke();
+        _playerController.ApplyDamage(1);
         PrintHand("AfterResolve");
         PrintState();
 
@@ -193,8 +187,7 @@ public class CombatController : MonoBehaviour
             int idx = _inputController.ChosenIndex.Value;
             var card = _deckSystem.PlayFromHand(idx);
             var def = card.def;
-            _playerController.cost -= def.cost;
-            _playerController.CostChange.Invoke();
+            _playerController.SpendCost(def.cost);
             StartCasting(def);
         }
         else if (_playerController.isCasting)
@@ -292,18 +285,6 @@ public class CombatController : MonoBehaviour
         }
     }
     
-    private static void ApplyDamage(ref int hp, ref int defense, int damage)
-    {
-        damage = Math.Max(0, damage);
-        if (damage == 0) return;
-
-        int absorbed = Math.Min(defense, damage);
-        defense -= absorbed;
-
-        int remaining = damage - absorbed;
-        if (remaining > 0)
-            hp = Math.Max(0, hp - remaining);
-    }
 
     private void EnemyStartCast()
     {
