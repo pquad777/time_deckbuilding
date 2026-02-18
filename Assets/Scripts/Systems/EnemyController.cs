@@ -29,10 +29,15 @@ public class EnemyController
 
     public void ApplyDamage(int damage)
     {
+        if (damage <= 0) return;
         this.defense -= damage;
-        if(this.defense<0)
-            health +=this.defense;
-        this.defense = 0;
+        if (defense < 0)
+        {
+            health += defense; // defense 음수만큼 hp 감소
+            defense = 0;
+        }
+        health = Mathf.Max(0, health);
+        OnChanged?.Invoke();
     }
 
     public void ApplyDefense(int defense)

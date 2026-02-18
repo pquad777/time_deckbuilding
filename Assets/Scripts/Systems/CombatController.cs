@@ -11,25 +11,26 @@ public class CombatController : MonoBehaviour
     [SerializeField] private EnemySlotView enemyView;
     [SerializeField] private GameManager gameManager;
     [SerializeField] private GameEndPanel gameEndPanel;
+
     private int _handSize = 4;
-   
+
     private PlayerController _playerController;
     private EnemyController _enemyController = new();
     private DeckSystem _deckSystem;
-    private System.Random _aiRng = new System.Random();
     
-    public enum CombatResult
-    {
-        Win,
-        Lose
-    }
-
+    public enum CombatResult { Win, Lose }
     public event Action<CombatResult> OnCombatEnded;
 
     private bool _combatEnded = false;
+    private bool _playerActedThisTurn = false;
+    private bool _playerAutoDiscardedThisTurn = false;
     
+    // ===== Timeline & Filters =====
+    private const int TimelineHorizon = 12;
+    private List<ActionEvent>[] _timeline;
+    private readonly List<IEventFilter> _filters = new();
+    private int _currentTurn;
     
-
     private void Start()
     {
         StartCombat(gameManager.RandomEnemyEncounter());
@@ -38,67 +39,317 @@ public class CombatController : MonoBehaviour
     public void StartCombat(EnemyDefinition enemyDefinition)
     {
         _combatEnded = false;
+
         _enemyController.LoadInfo(enemyDefinition);
         enemyView.Bind(_enemyController);
+
         _playerController = GameManager.instance.playerController;
-        _deckSystem = new DeckSystem(_handSize); 
+
+        _deckSystem = new DeckSystem(_handSize);
         var rng = new System.Random();
         _deckSystem.Init(_playerController.playerDeck, rng);
         _deckSystem.InitHand(_handSize);
         handUI.Init(_deckSystem);
-        
+
+        InitTimeline();
+
         _turnManager.OnTurnStart += TurnStart;
         _turnManager.OnTurnEnd += TurnEnd;
 
         _inputController.OnCardKeyPressed += HandleCardKeyPressed;
         _inputController.OnCancelPressed += HandleCancelPressed;
 
-
         _turnManager.StartLoop(true);
         PrintHand("Combat Start Hand");
     }
 
+    private void InitTimeline()
+    {
+        _timeline = new List<ActionEvent>[TimelineHorizon];
+        for (int i = 0; i < TimelineHorizon; i++)
+            _timeline[i] = new List<ActionEvent>(8);
+    }
+    
+    public void AddFilter(IEventFilter f)
+    {
+        if (f == null) return;
+        if (!_filters.Contains(f)) _filters.Add(f);
+    }
+
+    public void RemoveFilter(IEventFilter f)
+    {
+        if (f == null) return;
+        _filters.Remove(f);
+    }
+
+    public void Schedule(int delay, ActionEvent e)
+    {
+        delay = Mathf.Clamp(delay, 0, TimelineHorizon - 1);
+        _timeline[delay].Add(e);
+    }
+
+    public void CancelScheduledById(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return;
+
+        for (int i = 0; i < TimelineHorizon; i++)
+        {
+            var list = _timeline[i];
+            for (int j = list.Count - 1; j >= 0; j--)
+            {
+                if (list[j].id == id) list.RemoveAt(j);
+            }
+        }
+    }
+
     private void TurnStart(int turnIndex)
     {
+        _playerActedThisTurn = false;
+        _playerAutoDiscardedThisTurn = false;
+        _currentTurn = turnIndex;
         Debug.Log($"== TURN {turnIndex} START ==");
 
-        EnemyStartCast();
         _playerController.EndDodge();
-        if(_deckSystem.HandCount == 4)DiscardDefault();
+
+        EnemyPlanIntent();
+
+        if (_deckSystem.HandCount == 4)
+        {
+            DiscardDefault();
+            _playerAutoDiscardedThisTurn = true;
+        }
         _deckSystem.DrawToHand();
 
-        bool canAct = !_playerController.isCasting;
+        bool canAct = !_playerController.IsLocked(_currentTurn);
         _inputController.Enable(canAct);
         HandleCancelPressed();
-        
     }
 
     private void TurnEnd(int turnIndex)
     {
         Debug.Log($"-- TURN {turnIndex} END (Resolve) --");
         _inputController.Enable(false);
-        ResolveTurn();
 
+        // 1) 플레이어 선택 카드 예약(이번 턴에 플레이한 것이 castTime에 따라 미래에 실행)
+        PlanPlayerAction();
 
+        // 2) 이번 턴 실행 + shift
+        ResolveTimeline();
+
+        // 3) 종료 체크
         CheckEnd();
-
+        
         _playerController.ApplyDamage(1);
+
         PrintHand("AfterResolve");
         PrintState();
-
     }
 
-    private void ResolveTurn()
+    private void PlanPlayerAction()
     {
-        
-            Battle();
+        if (!_inputController.ChosenIndex.HasValue) return;
+
+        int idx = _inputController.ChosenIndex.Value;
+
+        if (!CanUseCard(idx))
+        {
             HandleCancelPressed();
-        _playerController.cost = Math.Min(_playerController.maxCost, ++_playerController.cost);
+            return;
+        }
 
+        var card = _deckSystem.PlayFromHand(idx);
+        var def = card.def;
 
+        // 비용 지불
+        _playerController.SpendCost(def.cost);
+        _playerController.StartCastLock(_currentTurn, def.castTimeTurns);
+        // 카드 효과 예약(현재는 Attack/Defense/Dodge만)
+        ScheduleCardEffects(def, Team.Player);
+        _playerActedThisTurn = true;
+        HandleCancelPressed();
     }
 
+    private void ResolveTimeline()
+    {
+        var events = _timeline[0];
 
+        ExecuteEvents(events);
+        events.Clear();
+
+        ShiftTimeline();
+
+        // 턴 자원 회복(원래 ResolveTurn에서 하던 거)
+        if (!_playerActedThisTurn && _playerAutoDiscardedThisTurn)
+        {
+            _playerController.GainCost(1);
+        }
+    }
+
+    private void ShiftTimeline()
+    {
+        for (int i = 0; i < TimelineHorizon - 1; i++)
+        {
+            var tmp = _timeline[i];
+            _timeline[i] = _timeline[i + 1];
+            _timeline[i + 1] = tmp;
+        }
+        _timeline[TimelineHorizon - 1].Clear();
+    }
+
+    private void ExecuteEvents(List<ActionEvent> events)
+    {
+        if (events == null || events.Count == 0) return;
+
+        _filters.Sort((a, b) => a.Priority.CompareTo(b.Priority));
+        var ctx = new ResolveContext(this);
+
+        for (int n = 0; n < events.Count; n++)
+        {
+            var e = events[n];
+
+            // 반복(연타)
+            int reps = Mathf.Max(1, e.repeat);
+            for (int r = 0; r < reps; r++)
+            {
+                var cur = e;
+
+                // before filters
+                for (int i = 0; i < _filters.Count; i++)
+                {
+                    _filters[i].BeforeExecute(ref cur, ctx);
+                    if (cur.cancelled) break;
+                }
+                if (cur.cancelled) continue;
+
+                ExecuteOne(cur);
+
+                // after filters
+                for (int i = 0; i < _filters.Count; i++)
+                    _filters[i].AfterExecute(cur, ctx);
+            }
+        }
+    }
+
+    private void ExecuteOne(ActionEvent e)
+    {
+        bool sourceIsPlayer = e.source == Team.Player;
+
+        // 타겟 해석
+        bool targetIsOpponent = e.target == TargetPolicy.Opponent;
+
+        if (targetIsOpponent)
+        {
+            // Player -> Enemy
+            if (sourceIsPlayer)
+            {
+                if (e.type == ActionType.Damage) _enemyController.ApplyDamage(e.value);
+                return;
+            }
+            // Enemy -> Player
+            else
+            {
+                if (e.type == ActionType.Damage) _playerController.ApplyDamage(e.value);
+                return;
+            }
+        }
+
+        // Self
+        if (sourceIsPlayer)
+        {
+            switch (e.type)
+            {
+                case ActionType.GainBlock: _playerController.ApplyDefense(e.value); break;
+                case ActionType.Dodge: _playerController.ApplyDodge(); break;
+                case ActionType.ClearBlock: _playerController.SetDefense(0); break;
+            }
+        }
+        else
+        {
+            switch (e.type)
+            {
+                case ActionType.GainBlock: _enemyController.ApplyDefense(e.value); break;
+                case ActionType.ClearBlock: _enemyController.defense = 0; break;
+            }
+        }
+    }
+    private void EnemyPlanIntent()
+    {
+        var list = _enemyController.enemyActionList;
+        if (list == null || list.Count == 0) return;
+
+        int randId = Random.Range(0, list.Count);
+        var card = list[randId];
+        if (card == null)
+        {
+            Debug.LogError($"[EnemyPlanIntent] enemyActionList[{randId}] is NULL. Fix enemyActionList references.");
+            return;
+        }
+
+        ScheduleCardEffects(card, Team.Enemy);
+
+        Debug.Log($"ENEMY PLAN: {card.displayName} in {card.castTimeTurns} turns");
+    }
+
+    private void ScheduleCardEffects(CardDefinition def, Team sourceTeam)
+    {
+        if (def == null)
+        {
+            Debug.LogError($"[ScheduleCardEffects] NULL CardDefinition (team={sourceTeam})");
+            return;
+        }
+
+        if (def.effects == null)
+        {
+            Debug.LogError($"[ScheduleCardEffects] '{def.displayName}' effects is NULL (team={sourceTeam})");
+            return;
+        }
+
+        if (def.effects.Count == 0)
+        {
+            Debug.LogError($"[ScheduleCardEffects] '{def.displayName}' has 0 effects (team={sourceTeam})");
+            return;
+        }
+        
+        int delay = Mathf.Max(0, def.castTimeTurns);
+
+        foreach (var effect in def.effects)
+        {
+            if (effect == null)
+            {
+                Debug.LogError($"[ScheduleCardEffects] '{def.displayName}' has NULL effect entry");
+                continue;
+            }
+
+            switch (effect.type)
+            {
+                case EffectType.Damage:
+                    Schedule(delay, ActionEvent.Damage(
+                        sourceTeam,
+                        TargetPolicy.Opponent,
+                        effect.value,
+                        true));
+                    break;
+
+                case EffectType.GainBlock:
+                    Schedule(delay, ActionEvent.GainBlock(
+                        sourceTeam,
+                        TargetPolicy.Self,
+                        effect.value));
+                    break;
+
+                case EffectType.Dodge:
+                    Schedule(delay, ActionEvent.Dodge(sourceTeam));
+                    break;
+
+                case EffectType.ApplyFilter:
+                    var filter = FilterFactory.Create(effect.filterType, effect.stacks, effect.magnitude);
+                    if (filter != null)
+                        AddFilter(filter);
+                    break;
+            }
+        }
+    }
+    
     private void DiscardDefault()
     {
         int idx = 3;
@@ -111,12 +362,11 @@ public class CombatController : MonoBehaviour
         if (_deckSystem == null) return;
 
         string s = $"{label} [";
-        for (int i = _deckSystem.HandCount-1; i >= 0; i--)
+        for (int i = _deckSystem.HandCount - 1; i >= 0; i--)
         {
             var c = _deckSystem.GetCard(i);
             s += (i == 0 ? "" : ", ") + (c != null ? c.def.displayName : "_");
         }
-
         s += "]";
         Debug.Log(s);
     }
@@ -132,14 +382,8 @@ public class CombatController : MonoBehaviour
     {
         if (_combatEnded) return;
 
-        if (_enemyController.health <= 0)
-        {
-            EndCombat(CombatResult.Win);
-        }
-        else if (_playerController.health <= 0)
-        {
-            EndCombat(CombatResult.Lose);
-        }
+        if (_enemyController.health <= 0) EndCombat(CombatResult.Win);
+        else if (_playerController.health <= 0) EndCombat(CombatResult.Lose);
     }
 
     private void EndCombat(CombatResult result)
@@ -148,7 +392,6 @@ public class CombatController : MonoBehaviour
 
         Debug.Log(result == CombatResult.Win ? "WIN" : "LOSE");
 
-        
         _turnManager.OnTurnStart -= TurnStart;
         _turnManager.OnTurnEnd -= TurnEnd;
 
@@ -156,14 +399,12 @@ public class CombatController : MonoBehaviour
         _inputController.OnCancelPressed -= HandleCancelPressed;
 
         _turnManager.EndLoop();
-        
         OnCombatEnded?.Invoke(result);
     }
 
     private void PrintState()
     {
-        Debug.Log(
-            $"HP: {_playerController.health} Def:{_playerController.defense} Enemy:{_enemyController.health} EnemyDef:{_enemyController.defense}");
+        Debug.Log($"HP: {_playerController.health} Def:{_playerController.defense} Enemy:{_enemyController.health} EnemyDef:{_enemyController.defense}");
     }
 
     private void HandleCancelPressed()
@@ -174,124 +415,8 @@ public class CombatController : MonoBehaviour
 
     private void HandleCardKeyPressed(int idx)
     {
-        if (_playerController.isCasting) return;
         if (!CanUseCard(idx)) return;
         handUI.HighlightSlot(idx);
-        _inputController.SetChoice(idx); // 선택 확정
-    }
-
-    private void Battle()
-    {
-        if (_inputController.ChosenIndex.HasValue && !_playerController.isCasting)
-        {
-            int idx = _inputController.ChosenIndex.Value;
-            var card = _deckSystem.PlayFromHand(idx);
-            var def = card.def;
-            _playerController.SpendCost(def.cost);
-            StartCasting(def);
-        }
-        else if (_playerController.isCasting)
-            ProcessPlayerCasting();
-        else 
-        Debug.Log("Done nothing.");
-
-        ProcessEnemyCasting();
-
-    }
-
-    public void StartCasting(CardDefinition def)
-    {
-
-        if (_playerController.isCasting) return;
-        if (def.castTimeTurns <= 0)
-        {
-            ProcessPlayerCard(def);
-            return;
-        }
-
-        _playerController.StartCasting(def);
-    }
-
-    private void ProcessPlayerCard(CardDefinition cardDefinition)
-    {
-        CardDefinition def = cardDefinition;
-        Debug.Log($"PLAYER FINISH CAST: type={def.Type}, turns={def.castTimeTurns}, value={def.power}");
-        if (!def) return;
-        switch (def.Type)
-        {
-            case CardType.Attack:
-            {
-                _enemyController.ApplyDamage(def.power);
-                break;
-            }
-            case CardType.Defense:
-                _playerController.ApplyDefense(def.power);
-                break;
-
-            case CardType.Dodge:
-                _playerController.ApplyDodge(); // 다음 턴에 발동
-                Debug.Log("DODGE");
-                break;
-        }
-
-        _playerController.isCasting = false;
-    }
-
-    private void ProcessPlayerCasting()
-    {
-        _playerController.remainCastTime--;
-        if (_playerController.remainCastTime <= 0)
-        {
-            _playerController.isCasting = false;
-            ProcessPlayerCard(_playerController.castingCard);
-        }
-    }
-    private void ProcessEnemyCard(CardDefinition cardDefinition)
-    {
-        CardDefinition def = cardDefinition;
-        Debug.Log($"ENEMY CAST: type={def.Type}, turns={def.castTimeTurns}, value={def.power}");
-        if (!def) return;
-        switch (def.Type)
-        {
-            case CardType.Attack:
-            {
-                if (_playerController.isDodging) break;
-                _playerController.ApplyDamage(def.power);
-                break;
-            }
-            case CardType.Defense:
-                _enemyController.ApplyDefense(def.power);
-                break;
-
-            case CardType.Dodge:
-                Debug.Log("Error: Enemy tries Dodging");
-                break;
-        }
-
-        _enemyController.castingCard = null;
-    }
-
-    private void ProcessEnemyCasting()
-    {
-        if (!_enemyController.castingCard) return;
-
-        _enemyController.remainCastTime--;
-        var card = _enemyController.castingCard;
-        Debug.Log($"ENEMY CASTING: type={card.Type}, turns={card.castTimeTurns}, value={card.power}");
-
-        if (_enemyController.remainCastTime <= 0)
-        {
-            ProcessEnemyCard(_enemyController.castingCard);
-        }
-    }
-    
-
-    private void EnemyStartCast()
-    {
-        if (_enemyController.castingCard) return;
-       var randId= Random.Range(0, _enemyController.enemyActionList.Count-1);
-       var card = _enemyController.enemyActionList[randId];
-        _enemyController.StartCasting(card);
-        Debug.Log($"ENEMY START CAST: type={card.Type}, turns={card.castTimeTurns}, value={card.power}");
+        _inputController.SetChoice(idx);
     }
 }

@@ -15,10 +15,10 @@ public class RewardCardView : MonoBehaviour
 
         if (nameText) nameText.text = def.displayName;
 
-        // 지금 CardDefinition에 설명 필드 없을 수 있으니 임시 문자열
-        if (descText) descText.text = $"Type: {def.Type} | Cost: {def.cost} | Power: {def.power} | Cast: {def.castTimeTurns}";
+        if (descText)
+            descText.text = CardTextBuilder.Build(def);
 
-        // 나중에 def.artwork 같은 게 생기면 여기서 넣으면 됨
+        // 아트는 나중
         // if (artImage) artImage.sprite = def.artwork;
     }
 }

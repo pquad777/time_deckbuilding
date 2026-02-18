@@ -19,59 +19,106 @@ public class PlayerController: MonoBehaviour
     public List<CardDefinition> playerDeck;
 
     public bool isCasting;
-    public int remainCastTime;
-    public CardDefinition castingCard;
     public bool isDodging;
-    public int defenseExpireTurn = -1;
+    public int castLockUntilTurn = -1;
     public event Action OnPlayerDataChanged;
 
+    // public void ApplyDamage(int damage)
+    // {
+    //     if (damage == 1)
+    //     {
+    //         health -= 1;
+    //         OnPlayerDataChanged?.Invoke();
+    //         return;
+    //     }
+    //     if (isDodging)
+    //         return;
+    //     defense -= damage;
+    //     if (defense < 0)
+    //     {
+    //         health +=defense;
+    //         defense = 0;
+    //     }
+    //     
+    //     OnPlayerDataChanged?.Invoke();
+    // }
     public void ApplyDamage(int damage)
     {
-        if (damage == 1)
-        {
-            health -= 1;
-            OnPlayerDataChanged?.Invoke();
-            return;
-        }
-        if (isDodging)
-            return;
+        if (damage <= 0) return;
+        if (isDodging) return;
+
         defense -= damage;
         if (defense < 0)
         {
-            health +=defense;
+            health += defense; // defense 음수만큼 체력 감소
             defense = 0;
         }
-        
+        health = Mathf.Max(0, health);
+        OnPlayerDataChanged?.Invoke();
+    }
+    public void ApplyDefense(int defense)
+    {
+        if (defense <= 0) return;
+        this.defense += defense;
+        OnPlayerDataChanged?.Invoke();
+    }
+    public void GainCost(int amount)
+    {
+        cost = Mathf.Min(maxCost, cost + amount);
         OnPlayerDataChanged?.Invoke();
     }
 
+    public void SetDefense(int value)
+    {
+        defense = Mathf.Max(0, value);
+        OnPlayerDataChanged?.Invoke();
+    }
+    
+    
     public void SpendCost(int _cost)
     {
         this.cost -= _cost;
         OnPlayerDataChanged?.Invoke();
     }
-    public void ApplyDefense(int defense)
+    public bool TrySpendCost(int amount)
     {
-        this.defense += defense;
+        if (amount < 0) return false;
+        if (cost < amount) return false;
+        cost -= amount;
         OnPlayerDataChanged?.Invoke();
+        return true;
     }
+    
 
     public void ApplyDodge()
     {
         isDodging = true;
+        OnPlayerDataChanged?.Invoke();
     }
 
     public void EndDodge()
     {
         isDodging = false;
+        OnPlayerDataChanged?.Invoke();
     }
 
-    public void StartCasting(CardDefinition def)
-    {
-        isCasting=true;
-        castingCard = def;
-        remainCastTime = def.castTimeTurns;
-    }
+    // public void StartCasting(CardDefinition def)
+    // {
+    //     if (def == null) return;
+    //
+    //     if (def.castTimeTurns <= 0)
+    //     {
+    //         isCasting = false;
+    //         castingCard = null;
+    //         remainCastTime = 0;
+    //         return;
+    //     }
+    //     isCasting=true;
+    //     castingCard = def;
+    //     remainCastTime = def.castTimeTurns;
+    //     OnPlayerDataChanged?.Invoke();
+    // }
+    
     public bool CanAfford(int cost) => gold >= cost;
 
     public bool TrySpend(int cost)
@@ -96,5 +143,21 @@ public class PlayerController: MonoBehaviour
         health = Mathf.Min(maxHealth, health + healAmount);
         OnPlayerDataChanged?.Invoke();
         return true;
+    }
+    public bool IsLocked(int currentTurn) => isCasting && currentTurn < castLockUntilTurn;
+
+    public void StartCastLock(int currentTurn, int castTimeTurns)
+    {
+        if (castTimeTurns <= 0) return;
+        isCasting = true;
+        castLockUntilTurn = currentTurn + castTimeTurns;
+        OnPlayerDataChanged?.Invoke();
+    }
+
+    public void EndCastLock()
+    {
+        isCasting = false;
+        castLockUntilTurn = -1;
+        OnPlayerDataChanged?.Invoke();
     }
 }

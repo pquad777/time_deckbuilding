@@ -4587,11 +4587,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShopController
   player: {fileID: 1552695852}
   cardPool:
-  - {fileID: 11400000, guid: 6cf2fb5ed18ce414fb8e6be581dfbbbf, type: 2}
-  - {fileID: 11400000, guid: 6548bf0ed3c5bbf4da309f1d7f8b93e1, type: 2}
-  - {fileID: 11400000, guid: 555337af92fd0bc4f9477ada7c03adf8, type: 2}
-  - {fileID: 11400000, guid: 9b585fbfffaae3c4c855e730d8e7b4b7, type: 2}
-  - {fileID: 11400000, guid: ceac1e66d8e394a4ab91f52acfcca002, type: 2}
+  - {fileID: 11400000, guid: 237a9775a1087304fbdd33646c4b24cb, type: 2}
+  - {fileID: 11400000, guid: 4f19850150ce2bd4cb8f8f6abba2d1ad, type: 2}
+  - {fileID: 11400000, guid: 0ea84085fb6933e44af11e4b68a959a7, type: 2}
+  - {fileID: 11400000, guid: 5672c2c5c49c2d94b8b594248600d648, type: 2}
+  - {fileID: 11400000, guid: d90cd7b2bf4b40e4ab846d912725a2a1, type: 2}
   offerCount: 5
   healCost: 100
   healAmount: 20
@@ -4648,20 +4648,20 @@ MonoBehaviour:
   maxCost: 10
   gold: 0
   playerDeck:
-  - {fileID: 11400000, guid: 6cf2fb5ed18ce414fb8e6be581dfbbbf, type: 2}
-  - {fileID: 11400000, guid: 6cf2fb5ed18ce414fb8e6be581dfbbbf, type: 2}
-  - {fileID: 11400000, guid: fcf86ec85bec87043b54b9d18b0838f0, type: 2}
-  - {fileID: 11400000, guid: fcf86ec85bec87043b54b9d18b0838f0, type: 2}
-  - {fileID: 11400000, guid: 6548bf0ed3c5bbf4da309f1d7f8b93e1, type: 2}
-  - {fileID: 11400000, guid: ceac1e66d8e394a4ab91f52acfcca002, type: 2}
-  - {fileID: 11400000, guid: ceac1e66d8e394a4ab91f52acfcca002, type: 2}
-  - {fileID: 11400000, guid: 9b585fbfffaae3c4c855e730d8e7b4b7, type: 2}
-  - {fileID: 11400000, guid: 9b585fbfffaae3c4c855e730d8e7b4b7, type: 2}
-  - {fileID: 11400000, guid: 6548bf0ed3c5bbf4da309f1d7f8b93e1, type: 2}
+  - {fileID: 11400000, guid: 4f19850150ce2bd4cb8f8f6abba2d1ad, type: 2}
+  - {fileID: 11400000, guid: 7e1cafeb487a1744783868736628656a, type: 2}
+  - {fileID: 11400000, guid: ab811296d6629474b85761534b2596d2, type: 2}
+  - {fileID: 11400000, guid: 3764f74596d7703439b6081e29bdd128, type: 2}
+  - {fileID: 11400000, guid: b0151be256047354abea2ff5e0bc67ba, type: 2}
+  - {fileID: 11400000, guid: 5672c2c5c49c2d94b8b594248600d648, type: 2}
+  - {fileID: 11400000, guid: 206d0e20a102b364f838e715266c436f, type: 2}
+  - {fileID: 11400000, guid: 3dbeeaa8c73ec4246bfc756c618e3948, type: 2}
+  - {fileID: 11400000, guid: d90cd7b2bf4b40e4ab846d912725a2a1, type: 2}
+  - {fileID: 11400000, guid: 0ea84085fb6933e44af11e4b68a959a7, type: 2}
+  - {fileID: 11400000, guid: 9f033b6ad4949804abc7887c7dc1b31f, type: 2}
   isCasting: 0
-  remainCastTime: 0
-  castingCard: {fileID: 0}
   isDodging: 0
+  castLockUntilTurn: -1
 --- !u!4 &1552695853
 Transform:
   m_ObjectHideFlags: 0

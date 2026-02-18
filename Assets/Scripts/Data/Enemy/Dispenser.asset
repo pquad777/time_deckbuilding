@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDefinition
   displayName: Dispenser
   sprite: {fileID: 750968990134057401, guid: 1918f0a3a3475f241984866d1966cd87, type: 3}
-  health: 30
-  maxHealth: 30
+  health: 50
+  maxHealth: 50
   defense: 0
   enemyActionList:
-  - {fileID: 11400000, guid: 6cf2fb5ed18ce414fb8e6be581dfbbbf, type: 2}
-  - {fileID: 11400000, guid: 6548bf0ed3c5bbf4da309f1d7f8b93e1, type: 2}
-  - {fileID: 11400000, guid: ceac1e66d8e394a4ab91f52acfcca002, type: 2}
+  - {fileID: 11400000, guid: 3cccdfb6475f723499552ab0c6ebe0c1, type: 2}
+  - {fileID: 11400000, guid: 23361b19cfa8e2843ab85d8843715d18, type: 2}
+  - {fileID: 11400000, guid: 6c19ea67ce31e374caa2b9d8ef411176, type: 2}
