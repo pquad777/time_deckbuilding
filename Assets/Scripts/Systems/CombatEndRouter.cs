@@ -63,7 +63,6 @@ public class CombatEndRouter : MonoBehaviour
             GameFlowManager.I.SetState(GameState.GameEnd);
             return;
         }
-
         // 승리 카운트는 유지(기존 규칙 살리기)
         _winsSinceLastShop++;
 
@@ -71,6 +70,7 @@ public class CombatEndRouter : MonoBehaviour
         if (_step == 0 || _step == 2)
         {
             // Normal 전투 승리 → Rest
+            gameManager.AudioManager.PlaySfx(AudioType.EnemyDie);
             _step++; 
             OpenRest();
             return;
@@ -81,6 +81,8 @@ public class CombatEndRouter : MonoBehaviour
             // Elite/Boss 승리 → Reward
             _step = 5;
             OpenReward();
+            gameManager.AudioManager.PlaySfx(AudioType.EnemyDie);
+            gameManager.AudioManager.PlaySfx(AudioType.BattleEnd);
             return;
         }
 

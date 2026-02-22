@@ -42,7 +42,7 @@ public class PlayerController: MonoBehaviour
     //     
     //     OnPlayerDataChanged?.Invoke();
     // }
-    public void ApplyDamage(int damage)
+    public void ApplyDamage(int damage, bool isPlaySound = true)
     {
         if (damage <= 0) return;
         if (isDodging) return;
@@ -54,12 +54,18 @@ public class PlayerController: MonoBehaviour
             defense = 0;
         }
         health = Mathf.Max(0, health);
+        if (isPlaySound)
+        {
+            GameManager.instance.AudioManager.PlaySfx(AudioType.TakeDamage);
+        }
+
         OnPlayerDataChanged?.Invoke();
     }
     public void ApplyDefense(int amount)
     {
         if (amount <= 0) return;
         defense += amount;
+        GameManager.instance.AudioManager.PlaySfx(AudioType.Defence);
         OnPlayerDataChanged?.Invoke();
     }
     public void GainCost(int amount)
@@ -71,6 +77,7 @@ public class PlayerController: MonoBehaviour
     public void SetDefense(int value)
     {
         defense = Mathf.Max(0, value);
+        GameManager.instance.AudioManager.PlaySfx(AudioType.Defence);
         OnPlayerDataChanged?.Invoke();
     }
     
@@ -93,6 +100,7 @@ public class PlayerController: MonoBehaviour
     public void ApplyDodge()
     {
         isDodging = true;
+        GameManager.instance.AudioManager.PlaySfx(AudioType.Evade);
         OnPlayerDataChanged?.Invoke();
     }
 
@@ -125,6 +133,7 @@ public class PlayerController: MonoBehaviour
     {
         if (gold < cost) return false;
         gold -= cost;
+        GameManager.instance.AudioManager.PlaySfx(AudioType.UseGold);
         OnPlayerDataChanged?.Invoke();
         return true;
     }
@@ -132,6 +141,7 @@ public class PlayerController: MonoBehaviour
     public void AddCard(CardDefinition card)
     {
         playerDeck.Add(card);
+        GameManager.instance.AudioManager.PlaySfx(AudioType.GetCard);
         OnPlayerDataChanged?.Invoke();
     }
 

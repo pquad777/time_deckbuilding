@@ -26,7 +26,6 @@ public class ShopUI : MonoBehaviour
     {
         _onLeave = onLeave;
         gameObject.SetActive(true);
-
         Debug.Log($"ShopUI Open. shop null? {shop == null}, player null? {player == null}");
         shop.BuildShop();
         Debug.Log($"Offers count: {shop.Offers.Count}");
