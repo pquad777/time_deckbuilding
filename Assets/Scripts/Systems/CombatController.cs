@@ -31,10 +31,10 @@ public class CombatController : MonoBehaviour
     private readonly List<IEventFilter> _filters = new();
     private int _currentTurn;
     
-    private void Start()
-    {
-        StartCombat(gameManager.RandomEnemyEncounter());
-    }
+    // private void Start()
+    // {
+    //     StartCombat(gameManager.RandomEnemyEncounter());
+    // }
 
     public void StartCombat(EnemyDefinition enemyDefinition)
     {

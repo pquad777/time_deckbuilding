@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 372401d15b828654883e47d9564ebe98, type: 3}
   m_Name: Dispenser
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDefinition
-  displayName: Dispenser
-  sprite: {fileID: 750968990134057401, guid: 1918f0a3a3475f241984866d1966cd87, type: 3}
+  displayName: TrafficLight
+  sprite: {fileID: -6996043372411322826, guid: 0f3f4c4b28c67244b8e8748312de9fc6, type: 3}
   health: 50
   maxHealth: 50
   defense: 0

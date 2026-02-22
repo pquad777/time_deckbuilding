@@ -30,7 +30,7 @@ public class EnemyController
     public void ApplyDamage(int damage)
     {
         if (damage <= 0) return;
-        this.defense -= damage;
+        defense -= damage;
         if (defense < 0)
         {
             health += defense; // defense 음수만큼 hp 감소

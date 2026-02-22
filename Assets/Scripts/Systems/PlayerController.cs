@@ -56,10 +56,10 @@ public class PlayerController: MonoBehaviour
         health = Mathf.Max(0, health);
         OnPlayerDataChanged?.Invoke();
     }
-    public void ApplyDefense(int defense)
+    public void ApplyDefense(int amount)
     {
-        if (defense <= 0) return;
-        this.defense += defense;
+        if (amount <= 0) return;
+        defense += amount;
         OnPlayerDataChanged?.Invoke();
     }
     public void GainCost(int amount)

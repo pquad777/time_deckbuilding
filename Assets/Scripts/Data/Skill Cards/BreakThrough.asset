@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06a06c84fea8d8b4dbc9a76d3168fe90, type: 3}
-  m_Name: Defense
+  m_Name: BreakThrough
   m_EditorClassIdentifier: Assembly-CSharp::CardDefinition
-  displayName: defense
-  cost: 0
-  castTimeTurns: 3
+  displayName: Breakthrough
+  cost: 2
+  castTimeTurns: 0
   effects:
-  - type: 1
-    value: 5
+  - type: 3
+    value: 0
     filterType: 0
-    stacks: 0
-    magnitude: 0
+    stacks: 2
+    magnitude: 2
   artwork: {fileID: 0}
-  frame: {fileID: 0}
+  frame: {fileID: 3213230277759091653, guid: 0c382fe504364f848824aca2a3ca4f5c, type: 3}
   cardText: 

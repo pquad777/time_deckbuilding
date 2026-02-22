@@ -10,7 +10,8 @@ public enum EffectType
 public enum FilterType
 {
     NextNAttacksBonus,
-    NextEnemyHitDouble
+    NextEnemyHitDouble,
+    DamageOverTime
 }
 [Serializable]
 

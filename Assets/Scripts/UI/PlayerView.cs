@@ -19,10 +19,10 @@ public class PlayerView : MonoBehaviour
         if (player != null && player.Sprite != null)
             portrait.sprite = player.Sprite;
         portrait.sprite = player.sprite;
-        PlayerHp.text = player.health.ToString();
-        PlayerDef.text = player.defense.ToString();
-        PlayerCost.text = player.cost.ToString();
-        Turn.text = turnManager.TurnIndex.ToString();
+        PlayerHp.text = $"HP: {player.health}/{player.maxHealth}";
+        PlayerDef.text = player.defense > 0 ? $"DEF: {player.defense}" : "";
+        PlayerCost.text = $"COST: {player.cost}/{player.maxCost}";
+        Turn.text = $"TURN: {turnManager.TurnIndex}";
         
         RefreshTurn(turnManager.TurnIndex);
         Refresh();
@@ -31,14 +31,13 @@ public class PlayerView : MonoBehaviour
     public void Refresh()
     {
         if (player == null) return;
-
-        PlayerHp.text = $"{player.health}/{player.maxHealth}";
-        PlayerDef.text = player.defense > 0 ? player.defense.ToString() : "";
-        PlayerCost.text = $"{player.cost}/{player.maxCost}";
+        PlayerHp.text = $"HP: {player.health}/{player.maxHealth}";
+        PlayerDef.text = player.defense > 0 ? $"DEF: {player.defense}" : "";
+        PlayerCost.text = $"COST: {player.cost}/{player.maxCost}";
     }
 
     public void RefreshTurn(int turnindex)
     {
-        Turn.text = turnindex.ToString();
+        Turn.text = $"TURN: {turnindex}";
     }
 }

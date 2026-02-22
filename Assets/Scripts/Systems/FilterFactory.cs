@@ -9,6 +9,8 @@ public static class FilterFactory
 
             case FilterType.NextEnemyHitDouble:
                 return new NextEnemyHitDoubleFilter(stacks);
+            case FilterType.DamageOverTime:
+                return new DamageOverTimeFilter(stacks, magnitude);
         }
 
         return null;

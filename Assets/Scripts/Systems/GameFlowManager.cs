@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum GameState { Combat, Shop, Event, GameEnd, Reward, GameStart }
+public enum GameState { Combat, Shop, Event, GameEnd, Reward, StartMenu }
 
 public class GameFlowManager : MonoBehaviour
 {
@@ -12,16 +12,19 @@ public class GameFlowManager : MonoBehaviour
     [SerializeField] private GameObject eventPanel;
     // [SerializeField] private GameObject gameEndPanel;
     [SerializeField] private GameObject rewardPanel;
+    [SerializeField] private GameObject startMenuPanel;
 
     [Header("Background Roots (SpriteRenderer objects)")]
     [SerializeField] private GameObject combatBgRoot; 
     [SerializeField] private GameObject shopBgRoot;   
     [SerializeField] private GameObject eventBgRoot;  
     [SerializeField] private GameObject rewardBgRoot;
-    // [SerializeField] private GameObject gameEndBgRoot; 
+    [SerializeField] private GameObject startMenuBgRoot;
+    // [SerializeField] private GameObject gameEndBgRoot;
+    
     void Start()
     {
-        SetState(GameState.Combat);
+        SetState(GameState.StartMenu);
     }
 
     void Awake()
@@ -38,7 +41,9 @@ public class GameFlowManager : MonoBehaviour
         if (eventPanel)   eventPanel.SetActive(state == GameState.Event);
         // if (gameEndPanel) gameEndPanel.SetActive(state == GameState.GameEnd);
         if (rewardPanel)  rewardPanel.SetActive(state == GameState.Reward);
+        if (startMenuPanel) startMenuPanel.SetActive(state == GameState.StartMenu);
         
+        if (startMenuBgRoot) startMenuBgRoot.SetActive(state == GameState.StartMenu);
         if (combatBgRoot) combatBgRoot.SetActive(state == GameState.Combat);
         if (shopBgRoot)   shopBgRoot.SetActive(state == GameState.Shop);
         if (eventBgRoot)  eventBgRoot.SetActive(state == GameState.Event);
