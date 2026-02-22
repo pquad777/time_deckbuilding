@@ -1,0 +1,24 @@
+public enum AudioType
+{
+    GetCard,
+    UseCard,
+    TryAttack,
+    TakeDamage,
+    Defence,
+    Evade,
+    EffectApplied,
+    TurnEnd1,
+    TurnEnd2,
+    BattleStart,
+    BattleEnd,
+    GetGold,
+    UseGold,
+    ClickButton,
+    EnemyDie,
+    TitleBGM,
+    BattleBGM,
+    BossBattleBGM,
+    ShopBGM,
+    GameWinBGM,
+    GameLoseBGM
+}
