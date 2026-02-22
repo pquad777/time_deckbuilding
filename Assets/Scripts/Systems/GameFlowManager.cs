@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum GameState { Combat, Shop, Event, GameEnd, Reward, StartMenu }
+public enum GameState { Combat, Shop, Event, Rest, GameEnd, Reward, StartMenu }
 
 public class GameFlowManager : MonoBehaviour
 {
@@ -13,7 +13,8 @@ public class GameFlowManager : MonoBehaviour
     // [SerializeField] private GameObject gameEndPanel;
     [SerializeField] private GameObject rewardPanel;
     [SerializeField] private GameObject startMenuPanel;
-
+    [SerializeField] private GameObject restPanel;
+    
     [Header("Background Roots (SpriteRenderer objects)")]
     [SerializeField] private GameObject combatBgRoot; 
     [SerializeField] private GameObject shopBgRoot;   
@@ -21,7 +22,7 @@ public class GameFlowManager : MonoBehaviour
     [SerializeField] private GameObject rewardBgRoot;
     [SerializeField] private GameObject startMenuBgRoot;
     // [SerializeField] private GameObject gameEndBgRoot;
-    
+    [SerializeField] private GameObject restBgRoot;
     void Start()
     {
         SetState(GameState.StartMenu);
@@ -42,7 +43,8 @@ public class GameFlowManager : MonoBehaviour
         // if (gameEndPanel) gameEndPanel.SetActive(state == GameState.GameEnd);
         if (rewardPanel)  rewardPanel.SetActive(state == GameState.Reward);
         if (startMenuPanel) startMenuPanel.SetActive(state == GameState.StartMenu);
-        
+        if (restPanel) restPanel.SetActive(state == GameState.Rest);
+        if (restBgRoot) restBgRoot.SetActive(state == GameState.Rest);
         if (startMenuBgRoot) startMenuBgRoot.SetActive(state == GameState.StartMenu);
         if (combatBgRoot) combatBgRoot.SetActive(state == GameState.Combat);
         if (shopBgRoot)   shopBgRoot.SetActive(state == GameState.Shop);
@@ -55,7 +57,8 @@ public class GameFlowManager : MonoBehaviour
             shopBgRoot?.GetComponentInChildren<SingleBackgroundFitter>()?.Apply();
         if (state == GameState.Event)
             eventBgRoot?.GetComponentInChildren<SingleBackgroundFitter>()?.Apply();
-        
+        if (state == GameState.Rest)
+            restBgRoot?.GetComponentInChildren<SingleBackgroundFitter>()?.Apply();
             
     }
 }

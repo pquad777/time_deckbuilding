@@ -346,6 +346,42 @@ public class CombatController : MonoBehaviour
                     if (filter != null)
                         AddFilter(filter);
                     break;
+                
+                case EffectType.DotDamage:
+                {
+                    int duration = Mathf.Max(1, effect.stacks);
+                    int dpt = Mathf.Max(0, effect.value);      
+                    
+                    for (int t = 1; t <= duration; t++)
+                    {
+                        Schedule(delay + t, ActionEvent.Damage(
+                            sourceTeam,
+                            TargetPolicy.Opponent,
+                            dpt,
+                            isAttack: false   
+                        ));
+                    }
+                    break;
+                }
+                
+                case EffectType.AllCostDamage:
+                {
+                    int spent = _playerController.cost;     
+                    if (spent <= 0) break;
+                    
+                    _playerController.SpendCost(spent);
+
+                    int mult = Mathf.Max(0, effect.magnitude);
+                    int dmg = spent * mult;
+
+                    Schedule(delay, ActionEvent.Damage(
+                        sourceTeam,
+                        TargetPolicy.Opponent,
+                        dmg,
+                        true
+                    ));
+                    break;
+                }
             }
         }
     }

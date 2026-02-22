@@ -5,13 +5,14 @@ public enum EffectType
     Damage,
     GainBlock,
     Dodge,
-    ApplyFilter
+    ApplyFilter,
+    DotDamage,
+    AllCostDamage,
 }
 public enum FilterType
 {
     NextNAttacksBonus,
-    NextEnemyHitDouble,
-    DamageOverTime
+    NextEnemyHitDouble
 }
 [Serializable]
 
