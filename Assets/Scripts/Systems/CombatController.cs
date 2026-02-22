@@ -455,14 +455,20 @@ public class CombatController : MonoBehaviour
 
     private void HandleCancelPressed()
     {
+        GameManager.instance.AudioManager.PlaySfx(AudioType.SelectCard);
         _inputController.ClearChoice();
         handUI.UnhighlightSlots();
     }
 
     private void HandleCardKeyPressed(int idx)
     {
-        if (!CanUseCard(idx)) return;
+        if (!CanUseCard(idx))
+        {
+            GameManager.instance.AudioManager.PlaySfx(AudioType.SelectCardFail);
+            return;
+        }
         handUI.HighlightSlot(idx);
+        GameManager.instance.AudioManager.PlaySfx(AudioType.SelectCard);
         _inputController.SetChoice(idx);
     }
 }

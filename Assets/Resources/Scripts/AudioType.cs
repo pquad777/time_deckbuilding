@@ -20,5 +20,7 @@ public enum AudioType
     BossBattleBGM,
     ShopBGM,
     GameWinBGM,
-    GameLoseBGM
+    GameLoseBGM,
+    SelectCard,
+    SelectCardFail,
 }
