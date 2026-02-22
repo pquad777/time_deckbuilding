@@ -36,13 +36,28 @@ public class GameFlowManager : MonoBehaviour
 
     public void SetState(GameState state)
     {
-        
-        if (combatPanel)  combatPanel.SetActive(state == GameState.Combat);
-        if (shopPanel)    shopPanel.SetActive(state == GameState.Shop);
+        switch(state)
+        {
+            case GameState.Combat:
+                GameManager.instance.AudioManager.PlayBgm(AudioType.BattleBGM);
+                break;
+            case GameState.Shop:
+                GameManager.instance.AudioManager.PlayBgm(AudioType.ShopBGM);
+                break;
+            case GameState.StartMenu:
+                GameManager.instance.AudioManager.PlayBgm(AudioType.TitleBGM);
+                break;
+            case GameState.Reward:
+                GameManager.instance.AudioManager.StopBgm();
+                break;
+        }
+        if (combatPanel) combatPanel.SetActive(state == GameState.Combat);
+        if (shopPanel) shopPanel.SetActive(state == GameState.Shop);
         if (eventPanel)   eventPanel.SetActive(state == GameState.Event);
         // if (gameEndPanel) gameEndPanel.SetActive(state == GameState.GameEnd);
-        if (rewardPanel)  rewardPanel.SetActive(state == GameState.Reward);
+        if (rewardPanel) rewardPanel.SetActive(state == GameState.Reward);
         if (startMenuPanel) startMenuPanel.SetActive(state == GameState.StartMenu);
+        
         if (restPanel) restPanel.SetActive(state == GameState.Rest);
         if (restBgRoot) restBgRoot.SetActive(state == GameState.Rest);
         if (startMenuBgRoot) startMenuBgRoot.SetActive(state == GameState.StartMenu);

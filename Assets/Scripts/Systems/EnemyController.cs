@@ -30,6 +30,7 @@ public class EnemyController
     public void ApplyDamage(int damage)
     {
         if (damage <= 0) return;
+        GameManager.instance.AudioManager.PlaySfx(AudioType.TakeDamage);
         defense -= damage;
         if (defense < 0)
         {
@@ -43,11 +44,12 @@ public class EnemyController
     public void ApplyDefense(int defense)
     {
         this.defense += defense;
+        GameManager.instance.AudioManager.PlaySfx(AudioType.Defence);
         OnChanged?.Invoke();
     }
     public void StartCasting(CardDefinition def)
     {
-        this.castingCard = def;
+        this.castingCard = def;;
         this.remainCastTime = def.castTimeTurns;
         OnChanged?.Invoke();
     }

@@ -7,6 +7,7 @@ public class StartMenuUI : MonoBehaviour
 
     public void OnClickStart()
     {
+        GameManager.instance.AudioManager.PlaySfx(AudioType.ClickButton);
         GameFlowManager.I.SetState(GameState.Combat);
         combat.StartCombat(gameManager.RandomEnemyEncounter());
     }

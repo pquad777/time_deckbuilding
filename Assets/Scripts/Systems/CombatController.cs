@@ -59,6 +59,7 @@ public class CombatController : MonoBehaviour
         _inputController.OnCardKeyPressed += HandleCardKeyPressed;
         _inputController.OnCancelPressed += HandleCancelPressed;
 
+        gameManager.AudioManager.PlaySfx(AudioType.BattleStart);
         _turnManager.StartLoop(true);
         PrintHand("Combat Start Hand");
     }
@@ -128,6 +129,7 @@ public class CombatController : MonoBehaviour
     private void TurnEnd(int turnIndex)
     {
         Debug.Log($"-- TURN {turnIndex} END (Resolve) --");
+        gameManager.AudioManager.PlaySfx(AudioType.TurnEnd1);
         _inputController.Enable(false);
 
         // 1) 플레이어 선택 카드 예약(이번 턴에 플레이한 것이 castTime에 따라 미래에 실행)
@@ -139,7 +141,7 @@ public class CombatController : MonoBehaviour
         // 3) 종료 체크
         CheckEnd();
         
-        _playerController.ApplyDamage(1);
+        _playerController.ApplyDamage(1,false);
 
         PrintHand("AfterResolve");
         PrintState();
@@ -159,7 +161,7 @@ public class CombatController : MonoBehaviour
 
         var card = _deckSystem.PlayFromHand(idx);
         var def = card.def;
-
+        gameManager.AudioManager.PlaySfx(AudioType.UseCard);
         // 비용 지불
         _playerController.SpendCost(def.cost);
         _playerController.StartCastLock(_currentTurn, def.castTimeTurns);
@@ -242,13 +244,21 @@ public class CombatController : MonoBehaviour
             // Player -> Enemy
             if (sourceIsPlayer)
             {
-                if (e.type == ActionType.Damage) _enemyController.ApplyDamage(e.value);
+                if (e.type == ActionType.Damage)
+                {
+                    GameManager.instance.AudioManager.PlaySfx(AudioType.TryAttack);
+                    _enemyController.ApplyDamage(e.value);
+                }
                 return;
             }
             // Enemy -> Player
             else
             {
-                if (e.type == ActionType.Damage) _playerController.ApplyDamage(e.value);
+                if (e.type == ActionType.Damage)
+                {
+                    GameManager.instance.AudioManager.PlaySfx(AudioType.TryAttack);
+                    _playerController.ApplyDamage(e.value);
+                }
                 return;
             }
         }

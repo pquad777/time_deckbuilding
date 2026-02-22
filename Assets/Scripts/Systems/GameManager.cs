@@ -6,11 +6,16 @@ using System.Security.Cryptography.X509Certificates;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance { get; private set; }
+    private AudioManager _audioManager;
+    public AudioManager AudioManager => _audioManager;
 
     public void Awake()
     {
         instance = this;
         DontDestroyOnLoad(gameObject);
+        _audioManager = GetComponent<AudioManager>();
+        AudioSource[] sources = GetComponents<AudioSource>();
+        _audioManager.Init(sources[0],sources[1]);
     }
 
     public PlayerController playerController;

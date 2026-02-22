@@ -14,6 +14,7 @@ public class RestUI : MonoBehaviour
         nextButton.onClick.RemoveAllListeners();
         nextButton.onClick.AddListener(() =>
         {
+            GameManager.instance.AudioManager.PlaySfx(AudioType.ClickButton);
             gameObject.SetActive(false);
             _onLeave?.Invoke();
         });
