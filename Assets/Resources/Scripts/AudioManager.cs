@@ -48,4 +48,9 @@ public class AudioManager : MonoBehaviour
         _bgmSource.loop = true;
         _bgmSource.Play();
     }
+
+    public void StopBgm()
+    {
+        _bgmSource.Stop();
+    }
 }
