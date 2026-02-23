@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06a06c84fea8d8b4dbc9a76d3168fe90, type: 3}
-  m_Name: Defense
+  m_Name: DEF
   m_EditorClassIdentifier: Assembly-CSharp::CardDefinition
   displayName: defense
   cost: 0

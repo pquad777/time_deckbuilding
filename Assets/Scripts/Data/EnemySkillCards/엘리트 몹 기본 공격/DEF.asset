@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06a06c84fea8d8b4dbc9a76d3168fe90, type: 3}
-  m_Name: attack 4
+  m_Name: DEF
   m_EditorClassIdentifier: Assembly-CSharp::CardDefinition
   displayName: attack
   cost: 0
   castTimeTurns: 3
   effects:
   - type: 0
-    value: 5
+    value: 10
     filterType: 0
     stacks: 0
     magnitude: 0
+    filterTarget: 0
   artwork: {fileID: 0}
   frame: {fileID: 0}
   cardText: 

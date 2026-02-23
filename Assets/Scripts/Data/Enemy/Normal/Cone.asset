@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 372401d15b828654883e47d9564ebe98, type: 3}
+  m_Name: Cone
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDefinition
+  displayName: Cone
+  sprite: {fileID: -8782597019420971693, guid: 689980cee84f7aa4eaa328fcf7722fef, type: 3}
+  health: 30
+  maxHealth: 30
+  defense: 0
+  enemyActionList:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

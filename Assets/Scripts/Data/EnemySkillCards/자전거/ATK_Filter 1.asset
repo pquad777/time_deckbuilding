@@ -9,12 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 372401d15b828654883e47d9564ebe98, type: 3}
-  m_Name: EnemyDefinition 1
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyDefinition
+  m_Script: {fileID: 11500000, guid: 06a06c84fea8d8b4dbc9a76d3168fe90, type: 3}
+  m_Name: ATK_Filter 1
+  m_EditorClassIdentifier: Assembly-CSharp::CardDefinition
   displayName: 
-  sprite: {fileID: 0}
-  health: 0
-  maxHealth: 0
-  defense: 0
-  enemyActionList: []
+  cost: 0
+  castTimeTurns: 0
+  effects: []
+  artwork: {fileID: 0}
+  frame: {fileID: 0}
+  cardText: 
