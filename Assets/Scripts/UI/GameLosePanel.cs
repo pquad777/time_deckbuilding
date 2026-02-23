@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class GameEndPanel : MonoBehaviour
+public class GameLosePanel : MonoBehaviour
 {
     [SerializeField] private Button toStartButton;
 

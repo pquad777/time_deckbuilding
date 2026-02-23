@@ -151,4 +151,10 @@ public class PlayerController: MonoBehaviour
         actionBlockedTurns--;
         OnPlayerDataChanged?.Invoke();
     }
+    public void SetCost(int value)
+    {
+        cost = Mathf.Max(0, value);
+        OnPlayerDataChanged?.Invoke();
+       
+    }
 }

@@ -10,8 +10,6 @@ public class CombatEndRouter : MonoBehaviour
     [SerializeField] private ShopUI shopUI;
     [SerializeField] private EventUI eventUI;
     [SerializeField] private RewardUI rewardUI;
-    [SerializeField] private RestUI restUI; // ✅ 추가
-
     [Range(0f, 1f)]
     [SerializeField] private float shopChance = 0.35f;
 
@@ -43,7 +41,6 @@ public class CombatEndRouter : MonoBehaviour
         if (combat != null) combat.OnCombatEnded -= HandleCombatEnded;
     }
 
-    // ✅ StartMenu에서 “게임 시작” 버튼 누르면 이걸 호출하는 걸 추천
     public void StartRun()
     {
         _cycle = 0;
@@ -52,7 +49,7 @@ public class CombatEndRouter : MonoBehaviour
         
         _eliteBag.Clear();
         _bossBag.Clear();
-        
+        GameManager.instance.playerController.SetCost(10);
         StartNextCombatBySchedule();
     }
 
@@ -60,7 +57,7 @@ public class CombatEndRouter : MonoBehaviour
     {
         if (result == CombatController.CombatResult.Lose)
         {
-            GameFlowManager.I.SetState(GameState.GameEnd);
+            GameFlowManager.I.SetState(GameState.GameLose);
             return;
         }
         // 승리 카운트는 유지(기존 규칙 살리기)
@@ -124,13 +121,12 @@ public class CombatEndRouter : MonoBehaviour
 
     private void ContinueAfterMeta()
     {
-        // Reward(5) 이후: 다음 cycle로 이동
         _cycle++;
 
         // 마지막(보스)까지 끝나면 종료 처리
         if (_cycle > LastCycleIndex)
         {
-            GameFlowManager.I.SetState(GameState.GameEnd); // 또는 StartMenu로 보내도 됨
+            GameFlowManager.I.SetState(GameState.GameEnd);
             return;
         }
 
