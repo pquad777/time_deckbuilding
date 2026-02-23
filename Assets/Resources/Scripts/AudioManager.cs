@@ -53,4 +53,9 @@ public class AudioManager : MonoBehaviour
     {
         _bgmSource.Stop();
     }
+
+    public void ChangeVolume(float volume)
+    {
+        _bgmSource.volume=volume;
+    }
 }

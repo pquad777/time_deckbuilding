@@ -31,13 +31,13 @@ public class PlayerView : MonoBehaviour
     public void Refresh()
     {
         if (player == null) return;
-        PlayerHp.text = $"HP: {player.health}/{player.maxHealth}";
-        PlayerDef.text = player.defense > 0 ? $"DEF: {player.defense}" : "";
-        PlayerCost.text = $"COST: {player.cost}/{player.maxCost}";
+        PlayerHp.text = $"{player.health}/{player.maxHealth}";
+        PlayerDef.text = player.defense > 0 ? $"{player.defense}" : "";
+        PlayerCost.text = $"{player.cost}/{player.maxCost}";
     }
 
     public void RefreshTurn(int turnindex)
     {
-        Turn.text = $"TURN: {turnindex}";
+        Turn.text = $"{turnindex}";
     }
 }

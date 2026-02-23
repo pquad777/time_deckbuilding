@@ -7,6 +7,7 @@ public class CardView : MonoBehaviour
     [SerializeField] private Image art;
     [SerializeField] private Image frameImage;
     [SerializeField] private Image highlightImage;
+    [SerializeField] private Image DisplayDisabledImage;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text costText;
     [SerializeField] private TMP_Text powerText;
@@ -51,5 +52,15 @@ public class CardView : MonoBehaviour
     public void UnHighlight()
     {
         highlightImage.enabled = false;
+    }
+
+    public void DisplayDisabled()
+    {
+        DisplayDisabledImage.enabled = true;   
+    }
+
+    public void DisplayEnabled()
+    {
+        DisplayDisabledImage.enabled = false;
     }
 }

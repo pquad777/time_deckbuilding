@@ -7,8 +7,10 @@ public class EnemySlotView : MonoBehaviour
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text EnemyHp;
     [SerializeField] private TMP_Text EnemyDef;
+    [SerializeField] private GameObject EnemyDisplay;
 
     private EnemyController _enemy;
+    private Vector3 _origin;
 
     public void Bind(EnemyController enemy)
     {
@@ -29,5 +31,20 @@ public class EnemySlotView : MonoBehaviour
 
         EnemyHp.text = $"{_enemy.health}/{_enemy.maxHealth}";
         EnemyDef.text = _enemy.defense > 0 ? _enemy.defense.ToString() : "";
+    }
+
+    public void Appear()
+    {
+        _origin = EnemyDisplay.transform.position;
+        EnemyDisplay.transform.position = _origin+new Vector3(600,0,0);
+    }
+
+    public void FinishAppearing()
+    {
+        EnemyDisplay.transform.position = _origin;
+    }
+    void Update()
+    {
+        EnemyDisplay.transform.position = Vector3.Lerp(EnemyDisplay.transform.position, _origin, Time.deltaTime);
     }
 }

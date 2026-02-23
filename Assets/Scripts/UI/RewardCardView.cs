@@ -18,7 +18,6 @@ public class RewardCardView : MonoBehaviour
         if (descText)
             descText.text = CardTextBuilder.Build(def);
 
-        // 아트는 나중
-        // if (artImage) artImage.sprite = def.artwork;
+        if (artImage) artImage.sprite = def.artwork;
     }
 }
