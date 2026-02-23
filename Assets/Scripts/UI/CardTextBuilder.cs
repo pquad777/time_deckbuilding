@@ -7,7 +7,10 @@ public static class CardTextBuilder
         if (def == null || def.effects == null) return "";
 
         StringBuilder sb = new StringBuilder();
-
+        if (def.cardText.Length!=0)
+        {
+            return def.cardText;
+        }
         if (def.castTimeTurns > 0)
             sb.AppendLine($"[{def.castTimeTurns}턴 후 발동]");
 

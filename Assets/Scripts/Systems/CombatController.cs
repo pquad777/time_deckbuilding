@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class CombatController : MonoBehaviour
@@ -11,6 +12,8 @@ public class CombatController : MonoBehaviour
     [SerializeField] private EnemySlotView enemyView;
     [SerializeField] private GameManager gameManager;
     [SerializeField] private GameEndPanel gameEndPanel;
+    [SerializeField] private Sprite[] countdownSprites;
+    [SerializeField] private Image countdownImage;
 
     private int _handSize = 4;
 
@@ -37,7 +40,7 @@ public class CombatController : MonoBehaviour
 
         _enemyController.LoadInfo(enemyDefinition);
         enemyView.Bind(_enemyController);
-
+        GameManager.instance.AudioManager.ChangeVolume(0.3f);
         _playerController = GameManager.instance.playerController;
 
         _deckSystem = new DeckSystem(_handSize);
@@ -48,17 +51,42 @@ public class CombatController : MonoBehaviour
 
         InitTimeline();
 
-        _turnManager.OnTurnStart += TurnStart;
-        _turnManager.OnTurnEnd += TurnEnd;
+        countdownImage.enabled = true;
+        _countdown = 3;
+        countdownImage.sprite = countdownSprites[_countdown];
+        gameManager.AudioManager.PlaySfx(AudioType.TurnEnd1);
 
-        _inputController.OnCardKeyPressed += HandleCardKeyPressed;
-        _inputController.OnCancelPressed += HandleCancelPressed;
-
-        gameManager.AudioManager.PlaySfx(AudioType.BattleStart);
-        _turnManager.StartLoop(true);
-        PrintHand("Combat Start Hand");
+        _turnManager.OnTurnEnd += Countdown;
+            enemyView.Appear();
+        _turnManager.StartLoop(true,false);
+        
     }
+    private int _countdown=3;
+    private void Countdown(int _)
+    {
+        _countdown--;
+        countdownImage.sprite = countdownSprites[_countdown];
+        if (_countdown == 0)
+        {
+            countdownImage.enabled = false;
+            _turnManager.OnTurnEnd -= Countdown;
+            _turnManager.OnTurnStart += TurnStart;
+            _turnManager.OnTurnEnd += TurnEnd;
 
+            _inputController.OnCardKeyPressed += HandleCardKeyPressed;
+            _inputController.OnCancelPressed += HandleCancelPressed;
+
+            gameManager.AudioManager.PlaySfx(AudioType.BattleStart);
+            GameManager.instance.AudioManager.ChangeVolume(1f);
+            enemyView.FinishAppearing();
+            _turnManager.StartLoop(true);
+            PrintHand("Combat Start Hand");
+        }
+        else
+        {
+            gameManager.AudioManager.PlaySfx(AudioType.TurnEnd1);
+        }
+    }
     private void InitTimeline()
     {
         _timeline = new List<ActionEvent>[TimelineHorizon];
@@ -119,6 +147,18 @@ public class CombatController : MonoBehaviour
 
         bool canAct = !_playerController.IsLocked(_currentTurn) && !_playerController.IsActionBlocked;
         _inputController.Enable(canAct);
+        for (int i = 0; i < _deckSystem.HandCount; i++)
+        {
+            if (!_deckSystem.HasCard(i)) continue;
+            if (!canAct || _playerController.cost < _deckSystem.Hand[i].def.cost)
+            {
+                handUI.DisplayDisableSlot(i);
+            }
+            else
+            {
+                handUI.DisplayEnableSlot(i);
+            }
+        }
         HandleCancelPressed();
     }
 

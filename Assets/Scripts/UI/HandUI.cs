@@ -51,4 +51,13 @@ public class HandUI : MonoBehaviour
             slots[i].UnHighlight();
         }
     }
+
+    public void DisplayDisableSlot(int idx)
+    {
+        slots[idx].DisplayDisabled();
+    }
+    public void DisplayEnableSlot(int idx)
+    {
+        slots[idx].DisplayEnabled();
+    }
 }

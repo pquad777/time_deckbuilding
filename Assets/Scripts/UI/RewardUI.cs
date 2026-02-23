@@ -14,7 +14,7 @@ public class RewardUI : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TMP_Text goldText;
     [SerializeField] private TMP_Text hpText;
-    [SerializeField] private RewardCardView cardView;
+    [SerializeField] private CardView cardView;
 
     [SerializeField] private Button acceptButton;
     [SerializeField] private Button leaveButton;
@@ -57,7 +57,11 @@ public class RewardUI : MonoBehaviour
         if (goldText) goldText.text = $"+{Mathf.Max(0, player.health)}G  (Gold: {player.gold})";
         if (hpText) hpText.text = $"HP: {player.health}/{player.maxHealth}";
 
-        if (cardView&& _offered) cardView.Bind(_offered);
+        if (cardView&& _offered)
+        {
+            cardView.Bind(new CardInstance(_offered));
+            cardView.UnHighlight();
+        }
 
         bool canChoose = !_decided && _offered != null;
         if (acceptButton) acceptButton.interactable = canChoose;

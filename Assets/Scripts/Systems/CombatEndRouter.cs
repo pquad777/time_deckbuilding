@@ -28,7 +28,7 @@ public class CombatEndRouter : MonoBehaviour
 
     // cycle: 0,1,2 (2가 마지막)
     private int _cycle = 0;
-    // step: 0 Normal, 1 Rest, 2 Normal, 3 Rest, 4 Elite/Boss, 5 Reward
+    // step: 0 Normal, 1 Normal, 2 Elite/Boss, 3 Reward
     private int _step = 0;
 
     private const int LastCycleIndex = 2;
@@ -67,45 +67,24 @@ public class CombatEndRouter : MonoBehaviour
         _winsSinceLastShop++;
 
         
-        if (_step == 0 || _step == 2)
+        if (_step == 0 || _step == 1)
         {
             // Normal 전투 승리 → Rest
             gameManager.AudioManager.PlaySfx(AudioType.EnemyDie);
             _step++; 
-            OpenRest();
+            StartNextCombatBySchedule();
             return;
         }
 
-        if (_step == 4)
+        if (_step == 2)
         {
             // Elite/Boss 승리 → Reward
-            _step = 5;
+            _step = 3 ;
             OpenReward();
             gameManager.AudioManager.PlaySfx(AudioType.EnemyDie);
             gameManager.AudioManager.PlaySfx(AudioType.BattleEnd);
             return;
         }
-
-        
-        OpenRest();
-    }
-
-    private void OpenRest()
-    {
-        if (GameFlowManager.I == null) { Debug.LogError("[Router] GameFlowManager.I is NULL"); return; }
-        if (restUI == null) { Debug.LogError("[Router] restUI is NULL (assign in inspector)"); return; }
-
-        GameFlowManager.I.SetState(GameState.Rest);
-        restUI.Open(onLeave: AfterRest);
-    }
-
-    private void AfterRest()
-    {
-        
-        if (_step == 1) _step = 2;
-        else if (_step == 3) _step = 4;
-
-        StartNextCombatBySchedule();
     }
 
     private void OpenReward()
@@ -156,24 +135,24 @@ public class CombatEndRouter : MonoBehaviour
         }
 
         // 다음 사이클 시작
-        _step = 0;
+        _step = 0; 
+        GameFlowManager.I.SetState(GameState.Combat);
         StartNextCombatBySchedule();
     }
 
     private void StartNextCombatBySchedule()
     {
-        GameFlowManager.I.SetState(GameState.Combat);
         combat.StartCombat(GetNextEnemy());
     }
 
     private EnemyDefinition GetNextEnemy()
     {
-        // Normal fights: step 0,2
-        if (_step == 0 || _step == 2)
+        // Normal fights: step 0,1
+        if (_step == 0 || _step == 1)
             return gameManager.RandomEnemyEncounter(); // ✅ 그대로 유지
 
-        // Elite/Boss fight: step 4
-        if (_step == 4)
+        // Elite/Boss fight: step 2
+        if (_step == 2)
         {
             bool isLastCycle = (_cycle == LastCycleIndex);
             return isLastCycle ? DrawBossNoRepeat() : DrawEliteNoRepeat();

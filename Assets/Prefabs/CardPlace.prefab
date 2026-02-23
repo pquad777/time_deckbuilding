@@ -184,6 +184,26 @@ PrefabInstance:
       propertyPath: frameImage
       value: 
       objectReference: {fileID: 2368335057188054901}
+    - target: {fileID: 8914036605332570743, guid: 89dd102f01b3f5c45a6dac9119e8a445, type: 3}
+      propertyPath: m_text
+      value: "\uC548\uB155"
+      objectReference: {fileID: 0}
+    - target: {fileID: 8914036605332570743, guid: 89dd102f01b3f5c45a6dac9119e8a445, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8914036605332570743, guid: 89dd102f01b3f5c45a6dac9119e8a445, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8914036605332570743, guid: 89dd102f01b3f5c45a6dac9119e8a445, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8914036605332570743, guid: 89dd102f01b3f5c45a6dac9119e8a445, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4278190080
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1048947328058750246, guid: 89dd102f01b3f5c45a6dac9119e8a445, type: 3}
     m_RemovedGameObjects: []

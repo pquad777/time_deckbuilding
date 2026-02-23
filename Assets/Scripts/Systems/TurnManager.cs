@@ -13,6 +13,7 @@ public class TurnManager:MonoBehaviour
     
     private float elapsedTime = 0f;
     private bool isRunning = false;
+    private bool isCounting = true;
     private void Update()
     {
         if (!isRunning) return;
@@ -23,14 +24,15 @@ public class TurnManager:MonoBehaviour
         
         OnTurnEnd?.Invoke(TurnIndex);
         if (!isRunning) return;
-        TurnIndex++;
+        if(isCounting) TurnIndex++;
         
         OnTurnStart?.Invoke(TurnIndex);
         //1.5초마다 턴엔드, 턴 스타트 신호를 보냄
     }
 
-    public void StartLoop(bool resetTurnIndex)
+    public void StartLoop(bool resetTurnIndex, bool isCounting = true)
     {
+        this.isCounting = isCounting;
         if (resetTurnIndex) TurnIndex = 0;
         isRunning = true;
         OnTurnStart?.Invoke(TurnIndex);
