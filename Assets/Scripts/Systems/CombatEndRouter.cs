@@ -145,7 +145,7 @@ public class CombatEndRouter : MonoBehaviour
     {
         // Normal fights: step 0,1
         if (_step == 0 || _step == 1)
-            return gameManager.RandomEnemyEncounter(); // ✅ 그대로 유지
+            return gameManager.RandomEnemyEncounter(); 
 
         // Elite/Boss fight: step 2
         if (_step == 2)
