@@ -34,11 +34,6 @@ public class CombatController : MonoBehaviour
     private readonly List<IEventFilter> _filters = new();
     private int _currentTurn;
     
-    // private void Start()
-    // {
-    //     StartCombat(gameManager.RandomEnemyEncounter());
-    // }
-
     public void StartCombat(EnemyDefinition enemyDefinition)
     {
         _combatEnded = false;
@@ -137,7 +132,8 @@ public class CombatController : MonoBehaviour
         _playerAutoDiscardedThisTurn = false;
         _currentTurn = turnIndex;
         Debug.Log($"== TURN {turnIndex} START ==");
-
+        _playerController.TickActionBlock();
+        
         _playerController.EndDodge();
 
         EnemyPlanIntent();
@@ -149,7 +145,7 @@ public class CombatController : MonoBehaviour
         }
         _deckSystem.DrawToHand();
 
-        bool canAct = !_playerController.IsLocked(_currentTurn);
+        bool canAct = !_playerController.IsLocked(_currentTurn) && !_playerController.IsActionBlocked;
         _inputController.Enable(canAct);
         for (int i = 0; i < _deckSystem.HandCount; i++)
         {
@@ -392,7 +388,7 @@ public class CombatController : MonoBehaviour
                     break;
 
                 case EffectType.ApplyFilter:
-                    var filter = FilterFactory.Create(effect.filterType, effect.stacks, effect.magnitude);
+                    var filter = FilterFactory.Create(effect.filterType, sourceTeam, effect.stacks, effect.magnitude);
                     if (filter != null)
                         AddFilter(filter);
                     break;

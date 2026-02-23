@@ -10,14 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 372401d15b828654883e47d9564ebe98, type: 3}
-  m_Name: Dispenser
+  m_Name: EnemyDefinition 2
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDefinition
-  displayName: TrafficLight
-  sprite: {fileID: -6996043372411322826, guid: 0f3f4c4b28c67244b8e8748312de9fc6, type: 3}
-  health: 50
-  maxHealth: 50
+  displayName: 
+  sprite: {fileID: 0}
+  health: 0
+  maxHealth: 0
   defense: 0
-  enemyActionList:
-  - {fileID: 11400000, guid: 3cccdfb6475f723499552ab0c6ebe0c1, type: 2}
-  - {fileID: 11400000, guid: 23361b19cfa8e2843ab85d8843715d18, type: 2}
-  - {fileID: 11400000, guid: 6c19ea67ce31e374caa2b9d8ef411176, type: 2}
+  enemyActionList: []

@@ -22,26 +22,10 @@ public class PlayerController: MonoBehaviour
     public bool isDodging;
     public int castLockUntilTurn = -1;
     public event Action OnPlayerDataChanged;
+    public int actionBlockedTurns; // 0이면 정상, 1 이상이면 행동 불가
 
-    // public void ApplyDamage(int damage)
-    // {
-    //     if (damage == 1)
-    //     {
-    //         health -= 1;
-    //         OnPlayerDataChanged?.Invoke();
-    //         return;
-    //     }
-    //     if (isDodging)
-    //         return;
-    //     defense -= damage;
-    //     if (defense < 0)
-    //     {
-    //         health +=defense;
-    //         defense = 0;
-    //     }
-    //     
-    //     OnPlayerDataChanged?.Invoke();
-    // }
+    public bool IsActionBlocked => actionBlockedTurns > 0;
+    
     public void ApplyDamage(int damage, bool isPlaySound = true)
     {
         if (damage <= 0) return;
@@ -109,23 +93,6 @@ public class PlayerController: MonoBehaviour
         isDodging = false;
         OnPlayerDataChanged?.Invoke();
     }
-
-    // public void StartCasting(CardDefinition def)
-    // {
-    //     if (def == null) return;
-    //
-    //     if (def.castTimeTurns <= 0)
-    //     {
-    //         isCasting = false;
-    //         castingCard = null;
-    //         remainCastTime = 0;
-    //         return;
-    //     }
-    //     isCasting=true;
-    //     castingCard = def;
-    //     remainCastTime = def.castTimeTurns;
-    //     OnPlayerDataChanged?.Invoke();
-    // }
     
     public bool CanAfford(int cost) => gold >= cost;
 
@@ -168,6 +135,20 @@ public class PlayerController: MonoBehaviour
     {
         isCasting = false;
         castLockUntilTurn = -1;
+        OnPlayerDataChanged?.Invoke();
+    }
+    
+    public void AddActionBlock(int turns)
+    {
+        if (turns <= 0) return;
+        actionBlockedTurns += turns; // 중첩 허용 (원하면 Max로 변경)
+        OnPlayerDataChanged?.Invoke();
+    }
+
+    public void TickActionBlock()
+    {
+        if (actionBlockedTurns <= 0) return;
+        actionBlockedTurns--;
         OnPlayerDataChanged?.Invoke();
     }
 }

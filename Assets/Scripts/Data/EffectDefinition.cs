@@ -12,7 +12,10 @@ public enum EffectType
 public enum FilterType
 {
     NextNAttacksBonus,
-    NextEnemyHitDouble
+    NextEnemyHitDouble,
+    Stun,
+    Weak,
+    Vulnerable
 }
 [Serializable]
 
@@ -26,5 +29,6 @@ public class EffectDefinition
     public FilterType filterType;
     public int stacks;
     public int magnitude;
+    public TargetPolicy filterTarget;
 }
 

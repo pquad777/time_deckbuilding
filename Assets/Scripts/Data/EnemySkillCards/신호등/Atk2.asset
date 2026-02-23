@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06a06c84fea8d8b4dbc9a76d3168fe90, type: 3}
-  m_Name: Attack
+  m_Name: Atk2
   m_EditorClassIdentifier: Assembly-CSharp::CardDefinition
-  displayName: ATK
+  displayName: 2
   cost: 0
   castTimeTurns: 4
   effects:
-  - type: 0
-    value: 10
-    filterType: 0
+  - type: 3
+    value: 0
+    filterType: 2
     stacks: 0
     magnitude: 0
+    filterTarget: 1
   artwork: {fileID: 0}
   frame: {fileID: 0}
   cardText: 
