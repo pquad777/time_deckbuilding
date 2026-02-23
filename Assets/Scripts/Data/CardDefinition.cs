@@ -7,6 +7,7 @@ public class CardDefinition : ScriptableObject
     public string displayName;
     public int cost;
     public int castTimeTurns;
+    public int shopCost;
     public List<EffectDefinition> effects;
     
     public Sprite artwork;

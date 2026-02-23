@@ -24,7 +24,7 @@ public class CombatEndRouter : MonoBehaviour
     private readonly List<EnemyDefinition> _eliteBag = new();
     private readonly List<EnemyDefinition> _bossBag = new();
 
-    // cycle: 0,1,2 (2가 마지막)
+    // cycle: 0,1,2,3 (3이 마지막)
     private int _cycle = 0;
     // step: 0 Normal, 1 Normal, 2 Elite/Boss, 3 Reward
     private int _step = 0;
@@ -106,7 +106,11 @@ public class CombatEndRouter : MonoBehaviour
     private void OpenShopOrEvent(System.Action onLeave)
     {
         bool goShop = Random.value < shopChance;
-
+        if (_cycle == 3)
+        {
+            ContinueAfterMeta();
+            return;
+        }
         if (goShop)
         {
             GameFlowManager.I.SetState(GameState.Shop);
@@ -143,12 +147,12 @@ public class CombatEndRouter : MonoBehaviour
 
     private EnemyDefinition GetNextEnemy()
     {
-        // Normal fights: step 0,1
+        // Normal fights: step 0,1, 2
         if (_step == 0 || _step == 1)
             return gameManager.RandomEnemyEncounter(); // ✅ 그대로 유지
 
-        // Elite/Boss fight: step 2
-        if (_step == 2)
+        // Elite/Boss fight: step 3
+        if (_step == 3)
         {
             bool isLastCycle = (_cycle == LastCycleIndex);
             return isLastCycle ? DrawBossNoRepeat() : DrawEliteNoRepeat();

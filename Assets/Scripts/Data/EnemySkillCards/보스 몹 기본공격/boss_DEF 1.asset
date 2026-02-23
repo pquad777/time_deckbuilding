@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06a06c84fea8d8b4dbc9a76d3168fe90, type: 3}
-  m_Name: Defend_3
+  m_Name: boss_DEF 1
   m_EditorClassIdentifier: Assembly-CSharp::CardDefinition
-  displayName: Defense
-  cost: 1
-  castTimeTurns: 0
+  displayName: boss_ATK
+  cost: 0
+  castTimeTurns: 3
   effects:
-  - type: 0
+  - type: 1
     value: 5
     filterType: 0
-    stacks: 0
-    magnitude: 0
+    stacks: 10
+    magnitude: 3
+    filterTarget: 0
   artwork: {fileID: 0}
-  frame: {fileID: -6520964854734656330, guid: b665dc430cf1d074083d2475ed02c30b, type: 3}
+  frame: {fileID: 0}
   cardText: 

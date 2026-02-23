@@ -4,23 +4,23 @@ using UnityEngine;
 public class WeakFilter : IEventFilter
 {
     public int Priority => -50; 
+    public int Remains { get; set; }
 
-    private int _remainingAttacks;
     private readonly float _mult; 
-    private readonly Team _owner;  
+    public Team Owner { get; set; }
 
     public WeakFilter(Team owner, int attacks, float mult)
     {
-        _owner = owner;
-        _remainingAttacks = Math.Max(1, attacks);
+        Owner = owner;
+        Remains = Math.Max(1, attacks);
         _mult = Mathf.Clamp(mult, 0.05f, 1f);
     }
 
     public void BeforeExecute(ref ActionEvent e, ResolveContext ctx)
     {
-        if (_remainingAttacks <= 0) return;
+        if (Remains <= 0) return;
 
-        if (e.type == ActionType.Damage && e.source == _owner)
+        if (e.type == ActionType.Damage && e.source == Owner)
         {
             int newVal = Mathf.FloorToInt(e.value * _mult);
             e.value = Mathf.Max(0, newVal);
@@ -29,12 +29,16 @@ public class WeakFilter : IEventFilter
 
     public void AfterExecute(ActionEvent executed, ResolveContext ctx)
     {
-        if (_remainingAttacks <= 0) return;
+        if (Remains <= 0) return;
 
-        if (!executed.cancelled && executed.type == ActionType.Damage && executed.source == _owner)
+        if (!executed.cancelled && executed.type == ActionType.Damage && executed.source == Owner)
         {
-            _remainingAttacks--;
-            if (_remainingAttacks <= 0) ctx.RemoveFilter(this);
+            Remains--;
+            if (Remains <= 0) ctx.RemoveFilter(this);
         }
+    }
+    public Sprite ReturnSprite()
+    {
+        return Resources.Load<Sprite>("Sprites/Weak");
     }
 }

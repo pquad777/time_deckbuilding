@@ -80,6 +80,8 @@ public class RewardUI : MonoBehaviour
     
     public void OnClickLeave()
     {
+        player.health = player.maxHealth;
+        player.cost=player.maxCost;
         gameObject.SetActive(false);
         _onLeave?.Invoke();
     }

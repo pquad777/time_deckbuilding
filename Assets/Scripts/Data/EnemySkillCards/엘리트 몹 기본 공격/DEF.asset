@@ -17,7 +17,7 @@ MonoBehaviour:
   castTimeTurns: 3
   effects:
   - type: 0
-    value: 10
+    value: 7
     filterType: 0
     stacks: 0
     magnitude: 0

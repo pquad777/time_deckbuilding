@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06a06c84fea8d8b4dbc9a76d3168fe90, type: 3}
   m_Name: Strike_2
   m_EditorClassIdentifier: Assembly-CSharp::CardDefinition
-  displayName: Strike
+  displayName: "\uAC15\uD55C \uD380\uCE58"
   cost: 1
   castTimeTurns: 0
+  shopCost: 150
   effects:
   - type: 0
-    value: 50
+    value: 5
     filterType: 0
     stacks: 0
     magnitude: 0
-  artwork: {fileID: 0}
+    filterTarget: 0
+  artwork: {fileID: 21300000, guid: d81bcc9f79fe750419a6896e7045b880, type: 3}
   frame: {fileID: 3213230277759091653, guid: 0c382fe504364f848824aca2a3ca4f5c, type: 3}
   cardText: 

@@ -4,21 +4,21 @@ using UnityEngine;
 public class VulnerableFilter : IEventFilter
 {
     public int Priority => -40; 
+    public int Remains { get; set; }
 
-    private int _remainingHits;
-    private readonly float _mult; 
-    private readonly Team _victim; 
+    private readonly float _mult;
+    public Team Owner { get; set; }
 
     public VulnerableFilter(Team victim, int hits, float mult)
     {
-        _victim = victim;
-        _remainingHits = Math.Max(1, hits);
+        Owner = victim;
+        Remains = Math.Max(1, hits);
         _mult = Mathf.Max(1f, mult);
     }
 
     public void BeforeExecute(ref ActionEvent e, ResolveContext ctx)
     {
-        if (_remainingHits <= 0) return;
+        if (Remains <= 0) return;
 
         if (e.type != ActionType.Damage) return;
 
@@ -28,7 +28,7 @@ public class VulnerableFilter : IEventFilter
             ? (e.source == Team.Player ? Team.Enemy : Team.Player)
             : e.source; // Self면 source 자신
 
-        if (victimThisEvent == _victim)
+        if (victimThisEvent == Owner)
         {
             int newVal = Mathf.CeilToInt(e.value * _mult);
             e.value = Mathf.Max(0, newVal);
@@ -37,7 +37,7 @@ public class VulnerableFilter : IEventFilter
 
     public void AfterExecute(ActionEvent executed, ResolveContext ctx)
     {
-        if (_remainingHits <= 0) return;
+        if (Remains <= 0) return;
 
         if (executed.cancelled) return;
         if (executed.type != ActionType.Damage) return;
@@ -47,10 +47,14 @@ public class VulnerableFilter : IEventFilter
             ? (executed.source == Team.Player ? Team.Enemy : Team.Player)
             : executed.source;
 
-        if (victimThisEvent == _victim)
+        if (victimThisEvent == Owner)
         {
-            _remainingHits--;
-            if (_remainingHits <= 0) ctx.RemoveFilter(this);
+            Remains--;
+            if (Remains <= 0) ctx.RemoveFilter(this);
         }
+    }    
+    public Sprite ReturnSprite()
+    {
+        return Resources.Load<Sprite>("Sprites/Vulnerable");
     }
 }

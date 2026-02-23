@@ -13,14 +13,13 @@ MonoBehaviour:
   m_Name: Crowd
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDefinition
   displayName: Crowd
-  sprite: {fileID: -4863425756934834216, guid: e9cc1fed88f2cab4694c54b60da5af42, type: 3}
-  health: 30
-  maxHealth: 30
+  sprite: {fileID: -4863425756934834216, guid: cf3bb60f42d5f03438c4899f376a54b4, type: 3}
+  health: 40
+  maxHealth: 40
   defense: 0
   enemyActionList:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: d5bff2c662bd856498eb8550e2b74da1, type: 2}
+  - {fileID: 11400000, guid: 78217b99010439a419b89b47c13d0f57, type: 2}
+  - {fileID: 11400000, guid: f7dd002c77c28814d9e932db01e8da32, type: 2}
+  - {fileID: 11400000, guid: 4b58b474837ea4744a07426fab4348c4, type: 2}
+  - {fileID: 11400000, guid: e1186da79fc83904e80b69952d8bfab4, type: 2}

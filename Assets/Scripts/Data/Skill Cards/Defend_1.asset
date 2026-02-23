@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06a06c84fea8d8b4dbc9a76d3168fe90, type: 3}
   m_Name: Defend_1
   m_EditorClassIdentifier: Assembly-CSharp::CardDefinition
-  displayName: Defense
+  displayName: "\uBC29\uC5B4"
   cost: 1
   castTimeTurns: 0
+  shopCost: 20
   effects:
-  - type: 0
+  - type: 1
     value: 5
     filterType: 0
     stacks: 0
     magnitude: 0
-  artwork: {fileID: 0}
+    filterTarget: 0
+  artwork: {fileID: 21300000, guid: 45314be8e417b6a44a3c4c0b21fcc22b, type: 3}
   frame: {fileID: -6520964854734656330, guid: b665dc430cf1d074083d2475ed02c30b, type: 3}
   cardText: 

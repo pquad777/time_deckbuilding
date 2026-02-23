@@ -14,7 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDefinition
   displayName: Pole
   sprite: {fileID: 6278751747772497945, guid: 23dd4deb48aac9c4ba8cc5c7405488b9, type: 3}
-  health: 0
-  maxHealth: 0
+  health: 30
+  maxHealth: 30
   defense: 0
-  enemyActionList: []
+  enemyActionList:
+  - {fileID: 11400000, guid: 3cccdfb6475f723499552ab0c6ebe0c1, type: 2}
+  - {fileID: 11400000, guid: 6c19ea67ce31e374caa2b9d8ef411176, type: 2}
+  - {fileID: 11400000, guid: 23361b19cfa8e2843ab85d8843715d18, type: 2}

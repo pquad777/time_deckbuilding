@@ -16,7 +16,7 @@ public static class CardTextBuilder
 
         foreach (var e in def.effects)
         {
-            sb.AppendLine(EffectToText(e));
+            sb.AppendLine(EffectToText(e).Length ==0 ? def.cardText  : EffectToText(e));
         }
 
         return sb.ToString();

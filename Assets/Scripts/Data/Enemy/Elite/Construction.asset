@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDefinition
   displayName: Construction
   sprite: {fileID: 3264483013764217048, guid: c68c587b3ee2bf548abe714fd06aef3f, type: 3}
-  health: 30
-  maxHealth: 30
+  health: 60
+  maxHealth: 60
   defense: 0
   enemyActionList:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: d5bff2c662bd856498eb8550e2b74da1, type: 2}
+  - {fileID: 11400000, guid: 78217b99010439a419b89b47c13d0f57, type: 2}
+  - {fileID: 11400000, guid: f7dd002c77c28814d9e932db01e8da32, type: 2}
+  - {fileID: 11400000, guid: 03acb9ec0ae563b43b028aed3a45f4ae, type: 2}
+  - {fileID: 11400000, guid: 12767f84be3be8944a67a40b982d50db, type: 2}

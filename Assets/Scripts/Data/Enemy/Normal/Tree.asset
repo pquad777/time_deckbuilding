@@ -14,7 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDefinition
   displayName: Tree
   sprite: {fileID: -8352534011894831202, guid: 956ee97f5a877db4aa24ac6312e64529, type: 3}
-  health: 0
-  maxHealth: 0
+  health: 30
+  maxHealth: 30
   defense: 0
-  enemyActionList: []
+  enemyActionList:
+  - {fileID: 11400000, guid: 3cccdfb6475f723499552ab0c6ebe0c1, type: 2}
+  - {fileID: 11400000, guid: 6c19ea67ce31e374caa2b9d8ef411176, type: 2}
+  - {fileID: 11400000, guid: 23361b19cfa8e2843ab85d8843715d18, type: 2}

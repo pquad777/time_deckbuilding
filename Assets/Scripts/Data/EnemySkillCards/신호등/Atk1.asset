@@ -21,6 +21,7 @@ MonoBehaviour:
     filterType: 0
     stacks: 0
     magnitude: 0
+    filterTarget: 1
   artwork: {fileID: 0}
   frame: {fileID: 0}
   cardText: 

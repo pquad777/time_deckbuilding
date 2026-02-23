@@ -14,8 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardDefinition
   displayName: 
   cost: 0
-  castTimeTurns: 0
-  effects: []
+  castTimeTurns: 2
+  effects:
+  - type: 0
+    value: 10
+    filterType: 1
+    stacks: 1
+    magnitude: 1
+    filterTarget: 1
   artwork: {fileID: 0}
   frame: {fileID: 0}
   cardText: 

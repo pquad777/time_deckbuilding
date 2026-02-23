@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06a06c84fea8d8b4dbc9a76d3168fe90, type: 3}
   m_Name: Dodge_1
   m_EditorClassIdentifier: Assembly-CSharp::CardDefinition
-  displayName: Dodge
+  displayName: "\uAE34\uAE09\uD68C\uD53C"
   cost: 5
   castTimeTurns: 0
+  shopCost: 200
   effects:
   - type: 2
     value: 0
     filterType: 0
     stacks: 0
     magnitude: 0
-  artwork: {fileID: 0}
+    filterTarget: 0
+  artwork: {fileID: -5212409813376967891, guid: 282af4bc20469b64fb9952f7d70843fb, type: 3}
   frame: {fileID: -6520964854734656330, guid: b665dc430cf1d074083d2475ed02c30b, type: 3}
   cardText: 

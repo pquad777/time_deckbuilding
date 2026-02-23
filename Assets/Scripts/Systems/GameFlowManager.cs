@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum GameState { Combat, Shop, Event, Rest, GameEnd, Reward, StartMenu, GameLose }
+public enum GameState { Combat, Shop, Event, Rest, GameEnd, Reward, StartMenu, GameLose,bossCombat }
 
 public class GameFlowManager : MonoBehaviour
 {
@@ -18,6 +18,7 @@ public class GameFlowManager : MonoBehaviour
     
     [Header("Background Roots (SpriteRenderer objects)")]
     [SerializeField] private GameObject combatBgRoot; 
+    [SerializeField] private GameObject BosscombatBgRoot; 
     [SerializeField] private GameObject shopBgRoot;   
     [SerializeField] private GameObject eventBgRoot;  
     [SerializeField] private GameObject rewardBgRoot;
@@ -41,7 +42,10 @@ public class GameFlowManager : MonoBehaviour
         switch(state)
         {
             case GameState.Combat:
-                GameManager.instance.AudioManager.PlayBgm(AudioType.BattleBGM);
+                GameManager.instance.AudioManager.PlayBgm(AudioType.BattleBGM, 0.7f);
+                break;
+            case GameState.bossCombat:
+                GameManager.instance.AudioManager.PlayBgm(AudioType.BossBattleBGM, 0.7f);
                 break;
             case GameState.Shop:
                 GameManager.instance.AudioManager.PlayBgm(AudioType.ShopBGM);
@@ -59,7 +63,7 @@ public class GameFlowManager : MonoBehaviour
                 GameManager.instance.AudioManager.PlayBgm(AudioType.GameLoseBGM);
                 break;
         }
-        if (combatPanel) combatPanel.SetActive(state == GameState.Combat);
+        if (combatPanel) combatPanel.SetActive(state == GameState.Combat || state == GameState.Reward || state == GameState.bossCombat);
         if (shopPanel) shopPanel.SetActive(state == GameState.Shop);
         if (eventPanel)   eventPanel.SetActive(state == GameState.Event);
         if (gameEndPanel) gameEndPanel.SetActive(state == GameState.GameEnd);
@@ -77,7 +81,7 @@ public class GameFlowManager : MonoBehaviour
         if (rewardBgRoot)  rewardBgRoot.SetActive(state == GameState.Reward);
         if (gameEndBgRoot) gameEndBgRoot.SetActive(state == GameState.GameEnd);
         if (gameLoseBgRoot) gameLoseBgRoot.SetActive(state == GameState.GameLose);
-
+        if(BosscombatBgRoot) BosscombatBgRoot.SetActive(state==GameState.bossCombat);
         
         if (state == GameState.Shop)
             shopBgRoot?.GetComponentInChildren<SingleBackgroundFitter>()?.Apply();

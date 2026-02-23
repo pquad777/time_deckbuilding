@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06a06c84fea8d8b4dbc9a76d3168fe90, type: 3}
   m_Name: Using Cost
   m_EditorClassIdentifier: Assembly-CSharp::CardDefinition
-  displayName: UseAllCost
+  displayName: "\uC804\uB825 \uD22C\uC0AC"
   cost: 0
   castTimeTurns: 2
+  shopCost: 250
   effects:
   - type: 5
     value: 0
     filterType: 0
     stacks: 0
     magnitude: 3
-  artwork: {fileID: 0}
+    filterTarget: 0
+  artwork: {fileID: 21300000, guid: 6261c2e4e3177984fb2e3d8ef609fdc2, type: 3}
   frame: {fileID: 3213230277759091653, guid: 0c382fe504364f848824aca2a3ca4f5c, type: 3}
-  cardText: 
+  cardText: "\uD604\uC7AC \uCF54\uC2A4\uD2B8 \uC804\uCCB4 X 3\uC758 \uD53C\uD574"

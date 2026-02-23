@@ -14,13 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardDefinition
   displayName: defense
   cost: 0
-  castTimeTurns: 3
+  castTimeTurns: 4
   effects:
   - type: 1
     value: 5
     filterType: 0
     stacks: 0
     magnitude: 0
+    filterTarget: 0
   artwork: {fileID: 0}
   frame: {fileID: 0}
   cardText: 

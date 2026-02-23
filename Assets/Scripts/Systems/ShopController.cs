@@ -77,7 +77,7 @@ public class ShopController : MonoBehaviour
 
     private int GetPrice(CardDefinition card)
     {
-        return 50; // TODO: rarity 기반으로 확장
+        return card.shopCost; // TODO: rarity 기반으로 확장
     }
 
     

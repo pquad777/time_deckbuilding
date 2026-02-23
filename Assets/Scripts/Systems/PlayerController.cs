@@ -30,17 +30,20 @@ public class PlayerController: MonoBehaviour
     {
         if (damage <= 0) return;
         if (isDodging) return;
+        if (isPlaySound){
+            defense -= damage;
+            if (defense < 0)
+            {
+                health += defense; // defense 음수만큼 체력 감소
+                defense = 0;
+            }
 
-        defense -= damage;
-        if (defense < 0)
-        {
-            health += defense; // defense 음수만큼 체력 감소
-            defense = 0;
-        }
-        health = Mathf.Max(0, health);
-        if (isPlaySound)
-        {
+            health = Mathf.Max(0, health);
             GameManager.instance.AudioManager.PlaySfx(AudioType.TakeDamage);
+        }
+        else
+        {
+            health -= damage;
         }
 
         OnPlayerDataChanged?.Invoke();
@@ -121,7 +124,7 @@ public class PlayerController: MonoBehaviour
         OnPlayerDataChanged?.Invoke();
         return true;
     }
-    public bool IsLocked(int currentTurn) => isCasting && currentTurn < castLockUntilTurn;
+    public bool IsLocked(int currentTurn) => isCasting && currentTurn <= castLockUntilTurn;
 
     public void StartCastLock(int currentTurn, int castTimeTurns)
     {

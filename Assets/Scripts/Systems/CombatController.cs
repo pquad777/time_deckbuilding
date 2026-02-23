@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -14,6 +15,12 @@ public class CombatController : MonoBehaviour
     [SerializeField] private GameEndPanel gameEndPanel;
     [SerializeField] private Sprite[] countdownSprites;
     [SerializeField] private Image countdownImage;
+    [SerializeField] private GameObject PlayerFilterList;
+    [SerializeField] private GameObject EnemyFilterList;
+    [SerializeField] private GameObject FilterPrefab;
+    [SerializeField] private GameObject PlayerCastingField;
+    [SerializeField] private GameObject EnemyCastingField;
+    [SerializeField] private GameObject CastingPrefab; 
 
     private int _handSize = 4;
 
@@ -36,6 +43,7 @@ public class CombatController : MonoBehaviour
     
     public void StartCombat(EnemyDefinition enemyDefinition)
     {
+        ClearAllChildren();
         _combatEnded = false;
 
         _enemyController.LoadInfo(enemyDefinition);
@@ -55,7 +63,7 @@ public class CombatController : MonoBehaviour
         _countdown = 3;
         countdownImage.sprite = countdownSprites[_countdown];
         gameManager.AudioManager.PlaySfx(AudioType.TurnEnd1);
-
+        _playerController.EndCastLock();
         _turnManager.OnTurnEnd += Countdown;
             enemyView.Appear();
         _turnManager.StartLoop(true,false);
@@ -126,8 +134,116 @@ public class CombatController : MonoBehaviour
         }
     }
 
+    private void AddCastingInfo(GameObject where, ActionEvent e)
+    {
+        GameObject Info = Instantiate(CastingPrefab,where.transform);
+        Image image = Info.GetComponentInChildren<Image>();
+        TextMeshProUGUI text =  Info.GetComponentInChildren<TextMeshProUGUI>();
+        switch (e.type)
+        {
+            case ActionType.Damage:
+            {
+                image.sprite = Resources.Load<Sprite>("Sprites/AttackIcon");
+                text.text = e.value.ToString();
+                break;
+            }
+            case ActionType.GainBlock:
+            {
+                image.sprite = Resources.Load<Sprite>("Sprites/DefenceIcon");
+                text.text = e.value.ToString();
+                break;
+            }
+            case ActionType.Dodge:
+            {
+                image.sprite = Resources.Load<Sprite>("Sprites/Evade");
+                break;
+            }
+            case ActionType.Filter:
+            {
+                image.sprite = Resources.Load<Sprite>("Sprites/Effect");
+                break;
+            }
+        }
+    }
+    private void AddFilterInfo(GameObject where,IEventFilter filter)
+    {
+        GameObject Info = Instantiate(FilterPrefab,where.transform);
+        Image image = Info.GetComponentInChildren<Image>();
+        TextMeshProUGUI text =  Info.GetComponentInChildren<TextMeshProUGUI>();
+        image.sprite = filter.ReturnSprite();
+        text.text = filter.Remains.ToString();
+    }
+
+    private void ClearAllChildren()
+    {
+        ClearChildren(PlayerCastingField.transform);
+        ClearChildren(EnemyCastingField.transform);
+        ClearChildren(EnemyFilterList.transform);
+        ClearChildren(PlayerFilterList.transform);
+    }
+    private void ClearChildren(Transform parent)
+    {
+        for (int i = parent.childCount - 1; i >= 0; i--)
+        {
+            Destroy(parent.GetChild(i).gameObject);
+        }
+    }
     private void TurnStart(int turnIndex)
     {
+        ClearAllChildren();
+        int ClosestPlayerAction = -1;
+        int ClosestEnemyAction = -1;
+        for (int i = 0; i < TimelineHorizon-1; i++)
+        {
+            foreach(ActionEvent _event in _timeline[i])
+            {
+                if (_event.source == Team.Player)
+                {
+                    if (ClosestPlayerAction == -1) 
+                    {
+                        GameObject Info = Instantiate(CastingPrefab,PlayerCastingField.transform);
+                        Image image = Info.GetComponentInChildren<Image>();
+                        TextMeshProUGUI text =  Info.GetComponentInChildren<TextMeshProUGUI>();
+                        image.sprite = Resources.Load<Sprite>("Sprites/CastingTurn");
+                        text.text = (i+1).ToString();
+                        ClosestPlayerAction = i;
+                    }
+
+                    if (i == ClosestPlayerAction)
+                    {
+                        AddCastingInfo(PlayerCastingField,_event);
+                    }
+                }
+                if (_event.source == Team.Enemy)
+                {
+                    if (ClosestEnemyAction == -1) 
+                    {
+                        GameObject Info = Instantiate(CastingPrefab,EnemyCastingField.transform);
+                        Image image = Info.GetComponentInChildren<Image>();
+                        TextMeshProUGUI text =  Info.GetComponentInChildren<TextMeshProUGUI>();
+                        image.sprite = Resources.Load<Sprite>("Sprites/CastingTurn");
+                        text.text = (i+1).ToString();
+                        ClosestEnemyAction = i;
+                    }
+
+                    if (i == ClosestEnemyAction)
+                    {
+                        AddCastingInfo(EnemyCastingField,_event);
+                    }
+                }
+            }
+        }
+        foreach(IEventFilter filter in _filters)
+        {
+            if (filter.Owner == Team.Player)
+            {
+                AddFilterInfo(PlayerFilterList, filter);
+            }
+            else if (filter.Owner == Team.Enemy)
+            {
+                AddFilterInfo(EnemyFilterList, filter);
+            }
+        }
         _playerActedThisTurn = false;
         _playerAutoDiscardedThisTurn = false;
         _currentTurn = turnIndex;
@@ -141,7 +257,7 @@ public class CombatController : MonoBehaviour
         if (_deckSystem.HandCount == 4)
         {
             DiscardDefault();
-            _playerAutoDiscardedThisTurn = true;
+            _playerController.GainCost(1);
         }
         _deckSystem.DrawToHand();
 
@@ -216,11 +332,6 @@ public class CombatController : MonoBehaviour
 
         ShiftTimeline();
 
-        // 턴 자원 회복(원래 ResolveTurn에서 하던 거)
-        if (!_playerActedThisTurn && _playerAutoDiscardedThisTurn)
-        {
-            _playerController.GainCost(1);
-        }
     }
 
     private void ShiftTimeline()
@@ -270,6 +381,12 @@ public class CombatController : MonoBehaviour
 
     private void ExecuteOne(ActionEvent e)
     {
+        if (e.type == ActionType.Filter)
+        {
+            AddFilter(e.filter);
+            Debug.LogWarning($"{e.value} {e.filter.Priority}");
+            return;
+        }
         bool sourceIsPlayer = e.source == Team.Player;
 
         // 타겟 해석
@@ -318,8 +435,15 @@ public class CombatController : MonoBehaviour
             }
         }
     }
+
+    private int enemyCastingTurnRemaining = 0;
     private void EnemyPlanIntent()
     {
+        if (enemyCastingTurnRemaining > 0)
+        {
+            enemyCastingTurnRemaining--;
+            return;
+        }
         var list = _enemyController.enemyActionList;
         if (list == null || list.Count == 0) return;
 
@@ -334,6 +458,7 @@ public class CombatController : MonoBehaviour
         ScheduleCardEffects(card, Team.Enemy);
 
         Debug.Log($"ENEMY PLAN: {card.displayName} in {card.castTimeTurns} turns");
+        enemyCastingTurnRemaining = card.castTimeTurns-1;
     }
 
     private void ScheduleCardEffects(CardDefinition def, Team sourceTeam)
@@ -388,9 +513,24 @@ public class CombatController : MonoBehaviour
                     break;
 
                 case EffectType.ApplyFilter:
-                    var filter = FilterFactory.Create(effect.filterType, sourceTeam, effect.stacks, effect.magnitude);
+                    Debug.LogWarning("filterScedule");
+                    Team filterOwner;
+                    if (sourceTeam == Team.Player)
+                    {
+                        filterOwner = effect.filterTarget == TargetPolicy.Opponent ? Team.Enemy : Team.Player;
+                    }
+                    else
+                    {
+                        filterOwner = effect.filterTarget == TargetPolicy.Opponent ? Team.Player: Team.Enemy;
+                    }
+                    var filter = FilterFactory.Create(effect.filterType, filterOwner, effect.stacks, effect.magnitude);
                     if (filter != null)
-                        AddFilter(filter);
+                    {
+                        Schedule(delay, ActionEvent.ApplyFilter(
+                            sourceTeam,
+                            effect.filterTarget,
+                            filter));
+                    }
                     break;
                 
                 case EffectType.DotDamage:

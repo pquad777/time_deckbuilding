@@ -2,7 +2,7 @@ using System;
 
 public enum Team { Player, Enemy }
 public enum TargetPolicy { Self, Opponent }
-public enum ActionType { Damage, GainBlock, Dodge, ClearBlock }
+public enum ActionType { Damage, GainBlock, Dodge, ClearBlock,Filter }
 
 [Serializable]
 public struct ActionEvent
@@ -16,6 +16,7 @@ public struct ActionEvent
 
     public bool isAttack;
     public bool cancelled;
+    public IEventFilter filter;
 
     public string id; // 예약 취소/연결용(나중 확장)
 
@@ -66,6 +67,19 @@ public struct ActionEvent
             target = TargetPolicy.Self,
             value = 0,
             repeat = 1,
+            isAttack = false,
+            cancelled = false,
+            id = id
+        };
+    public static ActionEvent ApplyFilter(Team src,TargetPolicy target,IEventFilter newFilter, string id = null)
+        => new ActionEvent
+        {
+            type = ActionType.Filter,
+            source = src,
+            target = TargetPolicy.Self,
+            value = 0,
+            repeat = 1,
+            filter=newFilter,
             isAttack = false,
             cancelled = false,
             id = id

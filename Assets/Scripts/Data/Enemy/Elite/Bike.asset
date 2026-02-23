@@ -13,8 +13,13 @@ MonoBehaviour:
   m_Name: Bike
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDefinition
   displayName: Bike
-  sprite: {fileID: 3051518952291987265, guid: 1adb45ab84e39464385c0c138582051e, type: 3}
-  health: 30
-  maxHealth: 30
+  sprite: {fileID: 7266912927281167626, guid: 0d05d3a0a3592f94c8e22caf484567dc, type: 3}
+  health: 50
+  maxHealth: 50
   defense: 0
-  enemyActionList: []
+  enemyActionList:
+  - {fileID: 11400000, guid: d5bff2c662bd856498eb8550e2b74da1, type: 2}
+  - {fileID: 11400000, guid: 78217b99010439a419b89b47c13d0f57, type: 2}
+  - {fileID: 11400000, guid: f7dd002c77c28814d9e932db01e8da32, type: 2}
+  - {fileID: 11400000, guid: 270ee59c9b274294aab80f3e1f01e66d, type: 2}
+  - {fileID: 11400000, guid: 9f3ab1147a26991478706b7a62e73f06, type: 2}

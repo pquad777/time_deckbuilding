@@ -18,6 +18,9 @@ MonoBehaviour:
   maxHealth: 50
   defense: 0
   enemyActionList:
+  - {fileID: 11400000, guid: d5bff2c662bd856498eb8550e2b74da1, type: 2}
+  - {fileID: 11400000, guid: 78217b99010439a419b89b47c13d0f57, type: 2}
+  - {fileID: 11400000, guid: f7dd002c77c28814d9e932db01e8da32, type: 2}
   - {fileID: 11400000, guid: d2e6fbff62e837a4984816523dba1a0c, type: 2}
   - {fileID: 11400000, guid: 4eb194cbb093f144288090d902762999, type: 2}
   - {fileID: 11400000, guid: 4924b6ed6bff8744b934a3c0a6ecd300, type: 2}

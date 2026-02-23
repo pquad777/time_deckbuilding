@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -8,6 +9,9 @@ public class EnemySlotView : MonoBehaviour
     [SerializeField] private TMP_Text EnemyHp;
     [SerializeField] private TMP_Text EnemyDef;
     [SerializeField] private GameObject EnemyDisplay;
+    [SerializeField] private RectTransform hpBar;
+    [SerializeField] private GameObject Def;
+    private float HpBarOriginSize;
 
     private EnemyController _enemy;
     private Vector3 _origin;
@@ -15,11 +19,13 @@ public class EnemySlotView : MonoBehaviour
     public void Bind(EnemyController enemy)
     {
         _enemy = enemy;
+        HpBarOriginSize = 380f;
         _enemy.OnChanged += Refresh;
         nameText.text = enemy.displayName;
         portrait.sprite = enemy.sprite;
         EnemyHp.text = enemy.health.ToString();
         EnemyDef.text = enemy.defense.ToString();
+        Def.SetActive(enemy.defense > 0);
         
 
         Refresh();
@@ -31,6 +37,9 @@ public class EnemySlotView : MonoBehaviour
 
         EnemyHp.text = $"{_enemy.health}/{_enemy.maxHealth}";
         EnemyDef.text = _enemy.defense > 0 ? _enemy.defense.ToString() : "";
+        hpBar.sizeDelta = new Vector2(HpBarOriginSize * _enemy.health/_enemy.maxHealth, hpBar.sizeDelta.y);
+        hpBar.anchoredPosition = new Vector2(-(HpBarOriginSize-hpBar.sizeDelta.x)/2, hpBar.anchoredPosition.y);
+        Def.SetActive(_enemy.defense > 0);
     }
 
     public void Appear()

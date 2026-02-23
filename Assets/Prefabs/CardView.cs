@@ -28,7 +28,7 @@ public class CardView : MonoBehaviour
         art.sprite = def.artwork;
         nameText.text = def.displayName;
         costText.text = def.cost.ToString();
-        powerText.text = def.cardText;
+        powerText.text = CardTextBuilder.Build(def);
         gameObject.SetActive(true);
 
     }

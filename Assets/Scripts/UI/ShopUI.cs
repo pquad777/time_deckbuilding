@@ -10,15 +10,11 @@ public class ShopUI : MonoBehaviour
 
     [Header("Header UI")]
     [SerializeField] private TMP_Text goldText;
-    [SerializeField] private TMP_Text hpText;
 
     [Header("Offer List UI")]
     [SerializeField] private Transform offerParent;      
-    [SerializeField] private ShopOfferItem offerPrefab;  
-
-    [Header("Heal UI")]
-    [SerializeField] private UnityEngine.UI.Button healButton;
-    [SerializeField] private TMP_Text healText; 
+    [SerializeField] private CardView offerPrefab;    
+ 
 
     private Action _onLeave;
     
@@ -35,27 +31,12 @@ public class ShopUI : MonoBehaviour
     private void RefreshAll()
     {
         RefreshHeader();
-        RefreshHeal();
         RebuildOffers();
     }
 
     private void RefreshHeader()
     {
-        if (goldText) goldText.text = $"{player.gold}G";
-        if (hpText) hpText.text = $"{player.health}/{player.maxHealth}";
-    }
-
-    private void RefreshHeal()
-    {
-        bool canHeal = !shop.HealSold
-                       && player.health < player.maxHealth
-                       && player.gold >= shop.HealCost;
-
-        if (healButton) healButton.interactable = canHeal;
-
-        if (!healText) return;
-        if (shop.HealSold) healText.text = "SOLD";
-        healText.text = $"Heal +{shop.HealAmount} ({shop.HealCost}G)";
+        if (goldText) goldText.text = $"{player.gold}C";
     }
 
     private void RebuildOffers()
@@ -70,10 +51,11 @@ public class ShopUI : MonoBehaviour
             var offer = offers[i];
 
             var item = Instantiate(offerPrefab, offerParent);
-
+            ShopOfferItem offerItem = item.GetComponentInChildren<ShopOfferItem>();
+            var button = Instantiate(offerItem, item.transform);
+            item.Bind(new CardInstance(offer.card));
             bool canAfford = player.gold >= offer.price;
-            item.Bind(
-                cardName: offer.card.displayName, // displayName 쓰는 게 더 자연스러움
+            button.Bind(
                 price: offer.price,
                 sold: offer.sold,
                 canAfford: canAfford,
